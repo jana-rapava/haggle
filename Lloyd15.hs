@@ -2,6 +2,8 @@
 
 module Lloyd15 where
 
+import Control.Exception (assert)
+
 boardHeight = 4
 boardWidth = 4
 -- TODO: make this configurable
@@ -17,3 +19,8 @@ adjacent = [[1,4],[0,2,5],[1,3,6],[2,7],
 newtype Swap a = S ((Int,a), (Int,a)) deriving Show
 type Matrix a = [(Int, a)]
 type Board = Matrix Char
+
+generateBoard :: Board
+generateBoard = let size = boardHeight * boardWidth in
+                assert (length cellvals == size)
+                zip [0..size-1] cellvals
