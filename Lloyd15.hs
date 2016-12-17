@@ -3,7 +3,8 @@
 module Lloyd15 where
 
 import Control.Exception (assert)
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, fromJust)
+import Data.List (find)
 
 type Matrix a = [(Int, a)]
 data Swap a = S {
@@ -44,3 +45,20 @@ grow boardHeight boardWidth seed =
 computeAdjacent :: Int -> Int -> [[Int]]
 computeAdjacent boardHeight boardWidth = [grow boardHeight boardWidth seed | seed <- [0..size-1]]
         where size = boardHeight * boardWidth
+
+findIndex :: (a -> Bool) -> Matrix a -> Maybe Int
+findIndex p b = do
+                (pos, _) <- find (p . snd) b
+                return pos
+
+mkSwap :: (Int, a, Int) -> Swap a
+mkSwap (x,y,z) = S {posFrom = x, sym = y, posTo = z}
+
+generateSwaps :: (Eq a) => Int -> Int -> Matrix a -> (a -> Bool) -> [Swap a]
+generateSwaps boardHeight boardWidth b blank = map mkSwap $ zip3
+        (repeat blankPos) swapSyms swapPoss
+                where
+                   blankPos = fromJust (findIndex blank b)
+                   adjacent = computeAdjacent boardHeight boardWidth
+                   swapPoss = adjacent !! blankPos
+                   swapSyms = map snd (map (b !!) swapPoss)
