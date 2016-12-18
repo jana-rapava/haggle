@@ -16,6 +16,10 @@ adjacent1 = [[1,4],[0,2,5],[1,3,6],[2,7],
 board1 = generateBoard boardHeight1 boardWidth1 cellvals1
 swaps1 = [S {posFrom = 15, sym = 'L', posTo = 11}, S {posFrom = 15, sym = 'O', posTo = 14}]
 blank1 = (=='.')
+board1' = [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'.'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')]
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
@@ -35,6 +39,10 @@ testGenerateSwaps1 :: Test
 testGenerateSwaps1 = TestCase $ assertEqual "chars"
         swaps1 (generateSwaps boardHeight1 boardWidth1 board1 blank1 )
 
+testApplySwap1 :: Test
+testApplySwap1 = TestCase $ assertEqual ""
+        board1' (applySwap (head swaps1) board1)
+
 boardHeight2 = 2
 boardWidth2 = 7
 cellvals2 = [1, 2, 3, 4, 5, 6, 7,
@@ -44,6 +52,8 @@ adjacent2 = [[1,7],[0,2,8],[1,3,9],[2,4,10],[3,5,11],[4,6,12],[5,13],
 board2 = generateBoard boardHeight2 boardWidth2 cellvals2
 swaps2 = [S {posFrom = 13, sym = 7, posTo = 6}, S {posFrom = 13, sym = 13, posTo = 12}]
 blank2 = (==0)
+board2' = [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,0),
+        (7,8),(8,9), (9,10), (10,11), (11,12),(12,13), (13,7)]
 
 testGenerateBoard3 :: Test
 testGenerateBoard3 = TestCase $ assertEqual ""
@@ -63,6 +73,10 @@ testGenerateSwaps2 :: Test
 testGenerateSwaps2 = TestCase $ assertEqual "nums"
         swaps2 (generateSwaps boardHeight2 boardWidth2 board2 blank2)
 
+testApplySwap2 :: Test
+testApplySwap2 = TestCase $ assertEqual ""
+        board2' (applySwap (head swaps2) board2)
+
 boardHeight3 = 5
 boardWidth3 = 3
 cellvals3 = ["Lorem", "ipsum", "dolor",
@@ -78,6 +92,11 @@ adjacent3 = [[1,3],[0,2,4],[1,5],
 board3 = generateBoard boardHeight3 boardWidth3 cellvals3
 swaps3 = [S {posFrom = 14, sym = "tempor", posTo = 11}, S {posFrom = 14, sym = "ut", posTo = 13}]
 blank3 = (=="")
+board3' = [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,"sit"), (4,"amet"), (5,"consectetur"),
+        (6,"adipiscing"), (7,"elit"), (8, "sed"),
+        (9,"do"), (10,"eiusmod"), (11,"") ,
+        (12,"incididunt"), (13,"ut"),(14,"tempor")]
 
 testGenerateBoard5 :: Test
 testGenerateBoard5 = TestCase $ assertEqual ""
@@ -97,6 +116,10 @@ testGenerateSwaps3 :: Test
 testGenerateSwaps3 = TestCase $ assertEqual "strings"
         swaps3 (generateSwaps boardHeight3 boardWidth3 board3 blank3)
 
+testApplySwap3 :: Test
+testApplySwap3 = TestCase $ assertEqual ""
+        board3' (applySwap (head swaps3) board3)
+
 main :: IO Counts
 main = runTestTT $ TestList [
         testGenerateBoard1,
@@ -110,5 +133,8 @@ main = runTestTT $ TestList [
         testComputeAdjacent3,
         testGenerateSwaps1,
         testGenerateSwaps2,
-        testGenerateSwaps3
+        testGenerateSwaps3,
+        testApplySwap1,
+        testApplySwap2,
+        testApplySwap3
          ]
