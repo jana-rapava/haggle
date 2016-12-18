@@ -62,3 +62,12 @@ generateSwaps boardHeight boardWidth b blank = map mkSwap $ zip3
                    adjacent = computeAdjacent boardHeight boardWidth
                    swapPoss = adjacent !! blankPos
                    swapSyms = map snd (map (b !!) swapPoss)
+
+applySwap :: Swap a -> Matrix a -> Matrix a
+applySwap s b = l3 ++ (pos2, snd $ b !! pos1):l4 ++ (pos1, sym s):l2
+        where
+                pos1 = posFrom s
+                pos2 = posTo s
+                (l1, _:l2) = splitAt (max pos1 pos2) b
+                (l3, _:l4) = splitAt (min pos1 pos2) l1
+
