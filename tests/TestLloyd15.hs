@@ -20,6 +20,14 @@ board1' = [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'.'),
         (12,'M'), (13,'N'), (14,'O'), (15,'L')]
+xboard1 = [(0,'A'), (1,'B'), (2,'C'), (3,'.'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'D'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'H'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')]
+xboard2 = [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'.'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'H'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')]
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
@@ -41,7 +49,11 @@ testGenerateSwaps1 = TestCase $ assertEqual "chars"
 
 testApplySwap1 :: Test
 testApplySwap1 = TestCase $ assertEqual ""
-        board1' (applySwap (head swaps1) board1)
+        board1' (applySwap board1 (head swaps1))
+
+testApplySwap2 :: Test
+testApplySwap2 = TestCase $ assertEqual ""
+        xboard2 (applySwap xboard1 (S { posFrom = 3, sym = 'D', posTo = 7}))
 
 boardHeight2 = 2
 boardWidth2 = 7
@@ -73,9 +85,9 @@ testGenerateSwaps2 :: Test
 testGenerateSwaps2 = TestCase $ assertEqual "nums"
         swaps2 (generateSwaps boardHeight2 boardWidth2 board2 blank2)
 
-testApplySwap2 :: Test
-testApplySwap2 = TestCase $ assertEqual ""
-        board2' (applySwap (head swaps2) board2)
+testApplySwap3 :: Test
+testApplySwap3 = TestCase $ assertEqual ""
+        board2' (applySwap board2 (head swaps2))
 
 boardHeight3 = 5
 boardWidth3 = 3
@@ -116,9 +128,9 @@ testGenerateSwaps3 :: Test
 testGenerateSwaps3 = TestCase $ assertEqual "strings"
         swaps3 (generateSwaps boardHeight3 boardWidth3 board3 blank3)
 
-testApplySwap3 :: Test
-testApplySwap3 = TestCase $ assertEqual ""
-        board3' (applySwap (head swaps3) board3)
+testApplySwap4 :: Test
+testApplySwap4 = TestCase $ assertEqual ""
+        board3' (applySwap board3 (head swaps3))
 
 main :: IO Counts
 main = runTestTT $ TestList [
@@ -136,5 +148,6 @@ main = runTestTT $ TestList [
         testGenerateSwaps3,
         testApplySwap1,
         testApplySwap2,
-        testApplySwap3
+        testApplySwap3,
+        testApplySwap4,
          ]
