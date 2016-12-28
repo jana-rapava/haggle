@@ -5,7 +5,7 @@ module Lloyd15 where
 import Control.Exception (assert)
 import Control.Monad (join, liftM2, liftM3)
 import Data.Maybe (catMaybes, fromJust)
-import Data.List (find)
+import Data.List (find, (\\))
 
 type Matrix a = [(Int, a)]
 data Swap a = S {
@@ -74,3 +74,20 @@ applySwap b s = l3 ++ (pos1, snd x):l4 ++ (pos2, snd y):l2
 
 nextBoards :: (Eq a) => [Int] -> [Int] -> [Matrix a] -> (a -> Bool)-> [Matrix a]
 nextBoards hs ws bs p = join $ (liftM2 . liftM2) applySwap [bs] (liftM3 (generateSwaps p) hs ws bs)
+
+-- this function determines the search order - change this to implement different heuristics
+pick :: [Matrix a] -> (Matrix a, [Matrix a])
+pick b = (last b, init b)
+
+prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
+-- delete all items in l1 which appear in l2
+prune = (\\)
+
+generateBranch :: (Eq a) => Int -> Int -> Matrix a -> [Matrix a] -> [[Matrix a]] -> (Matrix a -> Bool) -> ([Matrix a] -> Bool) -> (a -> Bool) -> Either [[Matrix a]] ([Matrix a], [[Matrix a]])
+generateBranch boardHeight boardWidth b path backlog stopSuccess stopFail p
+        | stopFail next = Left backlog
+        | stopSuccess b = Right (path, backlog)
+        | otherwise = let (nextBoard, bl) = pick (prune next path) in
+                generateBranch boardHeight boardWidth nextBoard
+                        (b:path) (bl:backlog) stopSuccess stopFail p
+                where next = nextBoards [boardHeight] [boardWidth] [b] p
