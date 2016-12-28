@@ -28,6 +28,18 @@ xboard2 = [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
         (4,'E'), (5,'F'), (6,'G'), (7,'.'),
         (8,'I'), (9,'J'), (10,'K'), (11,'H'),
         (12,'M'), (13,'N'), (14,'O'), (15,'L')]
+xboard3 = [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'.'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')]
+nextBoards1 = [[(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'.'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')],
+        [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'L'),
+        (12,'M'), (13,'N'), (14,'.'), (15,'O')]]
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
@@ -45,7 +57,7 @@ testComputeAdjacent1 = TestCase $ assertEqual ""
 
 testGenerateSwaps1 :: Test
 testGenerateSwaps1 = TestCase $ assertEqual "chars"
-        swaps1 (generateSwaps boardHeight1 boardWidth1 board1 blank1 )
+        swaps1 (generateSwaps blank1 boardHeight1 boardWidth1 board1)
 
 testApplySwap1 :: Test
 testApplySwap1 = TestCase $ assertEqual ""
@@ -54,6 +66,10 @@ testApplySwap1 = TestCase $ assertEqual ""
 testApplySwap2 :: Test
 testApplySwap2 = TestCase $ assertEqual ""
         xboard2 (applySwap xboard1 (S { posFrom = 3, sym = 'D', posTo = 7}))
+
+testNextBoards1 :: Test
+testNextBoards1 = TestCase $ assertEqual ""
+        nextBoards1 (nextBoards [boardHeight1] [boardWidth1] [board1] blank1)
 
 boardHeight2 = 2
 boardWidth2 = 7
@@ -66,6 +82,18 @@ swaps2 = [S {posFrom = 13, sym = 7, posTo = 6}, S {posFrom = 13, sym = 13, posTo
 blank2 = (==0)
 board2' = [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,0),
         (7,8),(8,9), (9,10), (10,11), (11,12),(12,13), (13,7)]
+yboard1 = [(0,1), (1,2), (2,3), (3,0),(4,5), (5,6), (6,7),
+        (7,8),(8,9), (9,10), (10,4), (11,11),(12,12), (13,13)]
+yboard2 = [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,7),
+        (7,8),(8,9), (9,10), (10,0), (11,11),(12,12), (13,13)]
+yboard3 = [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,7),
+        (7,8),(8,9), (9,10), (10,11), (11,0),(12,12), (13,13)]
+yboard4 = [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,7),
+        (7,8),(8,9), (9,10), (10,11), (11,12),(12,0), (13,13)]
+nextBoards2 = [[(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,0),
+        (7,8),(8,9), (9,10), (10,11), (11,12),(12,13), (13,7)],
+        [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,7),
+        (7,8),(8,9), (9,10), (10,11), (11,12),(12,0), (13,13)]]
 
 testGenerateBoard3 :: Test
 testGenerateBoard3 = TestCase $ assertEqual ""
@@ -83,11 +111,15 @@ testComputeAdjacent2 = TestCase $ assertEqual ""
 
 testGenerateSwaps2 :: Test
 testGenerateSwaps2 = TestCase $ assertEqual "nums"
-        swaps2 (generateSwaps boardHeight2 boardWidth2 board2 blank2)
+        swaps2 (generateSwaps blank2 boardHeight2 boardWidth2 board2 )
 
 testApplySwap3 :: Test
 testApplySwap3 = TestCase $ assertEqual ""
         board2' (applySwap board2 (head swaps2))
+
+testNextBoards2 :: Test
+testNextBoards2 = TestCase $ assertEqual ""
+        nextBoards2 (nextBoards [boardHeight2] [boardWidth2] [board2] blank2)
 
 boardHeight3 = 5
 boardWidth3 = 3
@@ -109,6 +141,41 @@ board3' = [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
         (6,"adipiscing"), (7,"elit"), (8, "sed"),
         (9,"do"), (10,"eiusmod"), (11,"") ,
         (12,"incididunt"), (13,"ut"),(14,"tempor")]
+zboard1 = [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,""), (4,"amet"), (5,"consectetur"),
+        (6,"sit"), (7,"elit"), (8, "sed"),
+        (9,"adipiscing"), (10,"eiusmod"), (11,"tempor") ,
+        (12,"do"), (13,"incididunt"),(14,"ut")]
+zboard2 = [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,"sit"), (4,"amet"), (5,"consectetur"),
+        (6,""), (7,"elit"), (8, "sed"),
+        (9,"adipiscing"), (10,"eiusmod"), (11,"tempor") ,
+        (12,"do"), (13,"incididunt"), (14,"ut")]
+zboard3 = [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,"sit"), (4,"amet"), (5,"consectetur"),
+        (6,"adipiscing"), (7,"elit"), (8, "sed"),
+        (9,""), (10,"eiusmod"), (11,"tempor") ,
+        (12,"do"), (13,"incididunt"), (14,"ut")]
+zboard4 = [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,"sit"), (4,"amet"), (5,"consectetur"),
+        (6,"adipiscing"), (7,"elit"), (8, "sed"),
+        (9,"do"), (10,"eiusmod"), (11,"tempor") ,
+        (12,""),(13,"incididunt"), (14,"ut")]
+zboard5 = [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,"sit"), (4,"amet"), (5,"consectetur"),
+        (6,"adipiscing"), (7,"elit"), (8, "sed"),
+        (9,"do"), (10,"eiusmod"), (11,"tempor") ,
+        (12,"incididunt"), (13,""),(14,"ut")]
+nextBoards3 = [[(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,"sit"), (4,"amet"), (5,"consectetur"),
+        (6,"adipiscing"), (7,"elit"), (8, "sed"),
+        (9,"do"), (10,"eiusmod"), (11,"") ,
+        (12,"incididunt"), (13,"ut"),(14,"tempor")],
+        [(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
+        (3,"sit"), (4,"amet"), (5,"consectetur"),
+        (6,"adipiscing"), (7,"elit"), (8, "sed"),
+        (9,"do"), (10,"eiusmod"), (11,"tempor") ,
+        (12,"incididunt"), (13,""),(14,"ut")]]
 
 testGenerateBoard5 :: Test
 testGenerateBoard5 = TestCase $ assertEqual ""
@@ -126,11 +193,15 @@ testComputeAdjacent3 = TestCase $ assertEqual ""
 
 testGenerateSwaps3 :: Test
 testGenerateSwaps3 = TestCase $ assertEqual "strings"
-        swaps3 (generateSwaps boardHeight3 boardWidth3 board3 blank3)
+        swaps3 (generateSwaps blank3 boardHeight3 boardWidth3 board3)
 
 testApplySwap4 :: Test
 testApplySwap4 = TestCase $ assertEqual ""
         board3' (applySwap board3 (head swaps3))
+
+testNextBoards3 :: Test
+testNextBoards3 = TestCase $ assertEqual ""
+        nextBoards3 (nextBoards [boardHeight3] [boardWidth3] [board3] blank3)
 
 main :: IO Counts
 main = runTestTT $ TestList [
@@ -150,4 +221,7 @@ main = runTestTT $ TestList [
         testApplySwap2,
         testApplySwap3,
         testApplySwap4,
+        testNextBoards1,
+        testNextBoards2,
+        testNextBoards3
          ]

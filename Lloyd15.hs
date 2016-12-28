@@ -3,6 +3,7 @@
 module Lloyd15 where
 
 import Control.Exception (assert)
+import Control.Monad (join, liftM2, liftM3)
 import Data.Maybe (catMaybes, fromJust)
 import Data.List (find)
 
@@ -54,8 +55,8 @@ findIndex p b = do
 mkSwap :: (Int, a, Int) -> Swap a
 mkSwap (x,y,z) = S {posFrom = x, sym = y, posTo = z}
 
-generateSwaps :: (Eq a) => Int -> Int -> Matrix a -> (a -> Bool) -> [Swap a]
-generateSwaps boardHeight boardWidth b blank = map mkSwap $ zip3
+generateSwaps :: (Eq a) => (a -> Bool) -> Int -> Int -> Matrix a  -> [Swap a]
+generateSwaps blank boardHeight boardWidth b = map mkSwap $ zip3
         (repeat blankPos) swapSyms swapPoss
                 where
                    blankPos = fromJust (findIndex blank b)
@@ -71,3 +72,5 @@ applySwap b s = l3 ++ (pos1, snd x):l4 ++ (pos2, snd y):l2
                 (l1,x:l2) = splitAt pos2 b
                 (l3,y:l4) = splitAt pos1 l1
 
+nextBoards :: (Eq a) => [Int] -> [Int] -> [Matrix a] -> (a -> Bool)-> [Matrix a]
+nextBoards hs ws bs p = join $ (liftM2 . liftM2) applySwap [bs] (liftM3 (generateSwaps p) hs ws bs)
