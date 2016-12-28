@@ -40,6 +40,9 @@ nextBoards1 = [[(0,'A'), (1,'B'), (2,'C'), (3,'D'),
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'L'),
         (12,'M'), (13,'N'), (14,'.'), (15,'O')]]
+rightmost1 = [xboard3, xboard2, xboard1]
+stopSuccess1 = (== board1)
+stopFail1 = null
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
@@ -71,6 +74,10 @@ testNextBoards1 :: Test
 testNextBoards1 = TestCase $ assertEqual ""
         nextBoards1 (nextBoards [boardHeight1] [boardWidth1] [board1] blank1)
 
+testGenerateBranch1 :: Test
+testGenerateBranch1 = TestCase $ assertEqual ""
+        rightmost1 (either undefined fst $ generateBranch boardHeight1 boardWidth1 xboard1 [] [[]] stopSuccess1 stopFail1 blank1)
+
 boardHeight2 = 2
 boardWidth2 = 7
 cellvals2 = [1, 2, 3, 4, 5, 6, 7,
@@ -94,6 +101,9 @@ nextBoards2 = [[(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,0),
         (7,8),(8,9), (9,10), (10,11), (11,12),(12,13), (13,7)],
         [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,7),
         (7,8),(8,9), (9,10), (10,11), (11,12),(12,0), (13,13)]]
+rightmost2 = [yboard4, yboard3, yboard2, yboard1]
+stopSuccess2 = (== board2)
+stopFail2 = null
 
 testGenerateBoard3 :: Test
 testGenerateBoard3 = TestCase $ assertEqual ""
@@ -120,6 +130,10 @@ testApplySwap3 = TestCase $ assertEqual ""
 testNextBoards2 :: Test
 testNextBoards2 = TestCase $ assertEqual ""
         nextBoards2 (nextBoards [boardHeight2] [boardWidth2] [board2] blank2)
+
+testGenerateBranch2 :: Test
+testGenerateBranch2 = TestCase $ assertEqual ""
+        rightmost2 (either undefined fst $ generateBranch boardHeight2 boardWidth2 yboard1 [] [[]] stopSuccess2 stopFail2 blank2)
 
 boardHeight3 = 5
 boardWidth3 = 3
@@ -176,6 +190,9 @@ nextBoards3 = [[(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
         (6,"adipiscing"), (7,"elit"), (8, "sed"),
         (9,"do"), (10,"eiusmod"), (11,"tempor") ,
         (12,"incididunt"), (13,""),(14,"ut")]]
+rightmost3 = [zboard5, zboard4, zboard3, zboard2, zboard1]
+stopSuccess3 = (== board3)
+stopFail3 = null
 
 testGenerateBoard5 :: Test
 testGenerateBoard5 = TestCase $ assertEqual ""
@@ -203,6 +220,10 @@ testNextBoards3 :: Test
 testNextBoards3 = TestCase $ assertEqual ""
         nextBoards3 (nextBoards [boardHeight3] [boardWidth3] [board3] blank3)
 
+testGenerateBranch3 :: Test
+testGenerateBranch3 = TestCase $ assertEqual ""
+        rightmost3 (either undefined fst $ generateBranch boardHeight3 boardWidth3 zboard1 [] [[]] stopSuccess3 stopFail3 blank3)
+
 main :: IO Counts
 main = runTestTT $ TestList [
         testGenerateBoard1,
@@ -223,5 +244,8 @@ main = runTestTT $ TestList [
         testApplySwap4,
         testNextBoards1,
         testNextBoards2,
-        testNextBoards3
+        testNextBoards3,
+        testGenerateBranch1,
+        testGenerateBranch2,
+        testGenerateBranch3
          ]
