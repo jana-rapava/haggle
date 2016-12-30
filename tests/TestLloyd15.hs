@@ -78,6 +78,10 @@ testGenerateBranch1 :: Test
 testGenerateBranch1 = TestCase $ assertEqual ""
         rightmost1 (either undefined fst $ generateBranch boardHeight1 boardWidth1 xboard1 [] [[]] stopSuccess1 stopFail1 blank1)
 
+testSearch1 :: Test
+testSearch1 = TestCase $ assertEqual ""
+       [rightmost1] (searchFirst boardHeight1 boardWidth1 [[xboard1]] stopSuccess1 stopFail1 blank1 [])
+
 boardHeight2 = 2
 boardWidth2 = 7
 cellvals2 = [1, 2, 3, 4, 5, 6, 7,
@@ -134,6 +138,10 @@ testNextBoards2 = TestCase $ assertEqual ""
 testGenerateBranch2 :: Test
 testGenerateBranch2 = TestCase $ assertEqual ""
         rightmost2 (either undefined fst $ generateBranch boardHeight2 boardWidth2 yboard1 [] [[]] stopSuccess2 stopFail2 blank2)
+
+testSearch2 :: Test
+testSearch2 = TestCase $ assertEqual ""
+       [rightmost2] (searchFirst boardHeight2 boardWidth2 [[yboard1]] stopSuccess2 stopFail2 blank2 [])
 
 boardHeight3 = 5
 boardWidth3 = 3
@@ -224,6 +232,10 @@ testGenerateBranch3 :: Test
 testGenerateBranch3 = TestCase $ assertEqual ""
         rightmost3 (either undefined fst $ generateBranch boardHeight3 boardWidth3 zboard1 [] [[]] stopSuccess3 stopFail3 blank3)
 
+testSearch3 :: Test
+testSearch3 = TestCase $ assertEqual ""
+       [rightmost3] (searchFirst boardHeight3 boardWidth3 [[zboard1]] stopSuccess3 stopFail3 blank3 [])
+
 main :: IO Counts
 main = runTestTT $ TestList [
         testGenerateBoard1,
@@ -247,5 +259,8 @@ main = runTestTT $ TestList [
         testNextBoards3,
         testGenerateBranch1,
         testGenerateBranch2,
-        testGenerateBranch3
+        testGenerateBranch3,
+        testSearch1,
+        testSearch2,
+        testSearch3
          ]

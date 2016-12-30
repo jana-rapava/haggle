@@ -91,3 +91,13 @@ generateBranch boardHeight boardWidth b path backlog stopSuccess stopFail p
                 generateBranch boardHeight boardWidth nextBoard
                         (b:path) (bl:backlog) stopSuccess stopFail p
                 where next = nextBoards [boardHeight] [boardWidth] [b] p
+
+searchFirst :: (Eq a) => Int -> Int -> [[Matrix a]] -> (Matrix a -> Bool) -> ([Matrix a] -> Bool) -> (a -> Bool) -> [[Matrix a]] -> [[Matrix a]]
+searchFirst _ _ [[]] _ _ _ paths = paths
+searchFirst boardHeight boardWidth ([]:backlog) stopSuccess stopFail p paths = searchFirst boardHeight boardWidth backlog stopSuccess stopFail p paths
+searchFirst boardHeight boardWidth ((b:bs):backlog) stopSuccess stopFail p paths = case res of
+                Left endBacklog -> searchFirst boardHeight boardWidth endBacklog stopSuccess stopFail p paths
+                Right (path, endBacklog) -> searchFirst boardHeight boardWidth [[]] stopSuccess stopFail p (path:paths)
+        where
+                res = generateBranch boardHeight boardWidth b [] (bs:backlog) stopSuccess stopFail p
+
