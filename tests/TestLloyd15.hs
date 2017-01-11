@@ -2,6 +2,7 @@ module TestLloyd15 where
 
 import Test.HUnit
 import Lloyd15
+import Control.Monad.Reader
 
 boardHeight1 = 4
 boardWidth1 = 4
@@ -88,11 +89,15 @@ testNextBoards1 = TestCase $ assertEqual ""
 
 testGenerateBranch1 :: Test
 testGenerateBranch1 = TestCase $ assertEqual ""
-        rightmost1 (either undefined fst $ generateBranch xboard1 [] [[]] stopSuccess1 stopFail1 blank1)
-
+        rightmost1 (either undefined
+        fst $ runReader (generateBranch xboard1 [] [[]] blank1)
+                        (FS {
+                         stopSuccess = stopSuccess1,
+                         stopFail = stopFail1})
+                )
 testSearch1 :: Test
 testSearch1 = TestCase $ assertEqual ""
-       [rightmost1] (searchFirst [[xboard1]] stopSuccess1 stopFail1 blank1 [])
+       [rightmost1] (searchFirst [[xboard1]] stopSuccess1 stopFail1 blank1)
 
 boardHeight2 = 2
 boardWidth2 = 7
@@ -164,11 +169,15 @@ testNextBoards2 = TestCase $ assertEqual ""
 
 testGenerateBranch2 :: Test
 testGenerateBranch2 = TestCase $ assertEqual ""
-        rightmost2 (either undefined fst $ generateBranch yboard1 [] [[]] stopSuccess2 stopFail2 blank2)
-
+        rightmost2 (either undefined
+        fst $ runReader (generateBranch yboard1 [] [[]] blank2)
+                        (FS {
+                         stopSuccess = stopSuccess2,
+                         stopFail = stopFail2})
+                )
 testSearch2 :: Test
 testSearch2 = TestCase $ assertEqual ""
-       [rightmost2] (searchFirst [[yboard1]] stopSuccess2 stopFail2 blank2 [])
+       [rightmost2] (searchFirst [[yboard1]] stopSuccess2 stopFail2 blank2)
 
 boardHeight3 = 5
 boardWidth3 = 3
@@ -275,11 +284,16 @@ testNextBoards3 = TestCase $ assertEqual ""
 
 testGenerateBranch3 :: Test
 testGenerateBranch3 = TestCase $ assertEqual ""
-        rightmost3 (either undefined fst $ generateBranch zboard1 [] [[]] stopSuccess3 stopFail3 blank3)
+        rightmost3 (either undefined
+        fst $ runReader (generateBranch zboard1 [] [[]] blank3)
+                        (FS {
+                         stopSuccess = stopSuccess3,
+                         stopFail = stopFail3})
+                )
 
 testSearch3 :: Test
 testSearch3 = TestCase $ assertEqual ""
-       [rightmost3] (searchFirst [[zboard1]] stopSuccess3 stopFail3 blank3 [])
+       [rightmost3] (searchFirst [[zboard1]] stopSuccess3 stopFail3 blank3)
 
 main :: IO Counts
 main = runTestTT $ TestList [
