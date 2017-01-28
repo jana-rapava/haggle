@@ -3,6 +3,7 @@ module TestLloyd15 where
 import Test.HUnit
 import Lloyd15
 import Control.Monad.Reader
+import Control.Monad.State.Lazy
 
 boardHeight1 = 4
 boardWidth1 = 4
@@ -55,6 +56,7 @@ nextBoards1 = [[(0,'A'), (1,'B'), (2,'C'), (3,'D'),
         (12,'M'), (13,'N'), (14,'.'), (15,'O')]]
 rightmost1 = [xboard3, xboard2, xboard1]
 stopSuccess1 = (== board1)
+stopFail1 :: [Matrix a] -> Bool
 stopFail1 = null
 
 testGenerateBoard1 :: Test
@@ -89,15 +91,16 @@ testNextBoards1 = TestCase $ assertEqual ""
 
 testGenerateBranch1 :: Test
 testGenerateBranch1 = TestCase $ assertEqual ""
-        rightmost1 (either undefined
-        fst $ runReader (generateBranch xboard1 [] [[]] blank1)
-                        (FS {
-                         stopSuccess = stopSuccess1,
-                         stopFail = stopFail1})
-                )
-testSearch1 :: Test
-testSearch1 = TestCase $ assertEqual ""
-       [rightmost1] (searchFirst [[xboard1]] stopSuccess1 stopFail1 blank1)
+        rightmost1 (snd $ runReader
+        (runStateT (generateBranch xboard1 [[]] blank1) [])
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1})
+        )
+
+testSearchFirst1 :: Test
+testSearchFirst1 = TestCase $ assertEqual ""
+       rightmost1 (searchFirst' [[xboard1]] blank1 stopSuccess1 stopFail1)
 
 boardHeight2 = 2
 boardWidth2 = 7
@@ -139,6 +142,7 @@ nextBoards2 = [[(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,0),
         (7,8),(8,9), (9,10), (10,11), (11,12),(12,0), (13,13)]]
 rightmost2 = [yboard4, yboard3, yboard2, yboard1]
 stopSuccess2 = (== board2)
+stopFail2 :: [Matrix a] -> Bool
 stopFail2 = null
 
 testGenerateBoard3 :: Test
@@ -169,15 +173,16 @@ testNextBoards2 = TestCase $ assertEqual ""
 
 testGenerateBranch2 :: Test
 testGenerateBranch2 = TestCase $ assertEqual ""
-        rightmost2 (either undefined
-        fst $ runReader (generateBranch yboard1 [] [[]] blank2)
-                        (FS {
-                         stopSuccess = stopSuccess2,
-                         stopFail = stopFail2})
-                )
-testSearch2 :: Test
-testSearch2 = TestCase $ assertEqual ""
-       [rightmost2] (searchFirst [[yboard1]] stopSuccess2 stopFail2 blank2)
+        rightmost2 (snd $ runReader
+        (runStateT (generateBranch yboard1 [[]] blank2) [])
+        (FS {
+        stopSuccess = stopSuccess2,
+        stopFail = stopFail2})
+        )
+
+testSearchFirst2 :: Test
+testSearchFirst2 = TestCase $ assertEqual ""
+       rightmost2 (searchFirst' [[yboard1]] blank2 stopSuccess2 stopFail2)
 
 boardHeight3 = 5
 boardWidth3 = 3
@@ -254,6 +259,7 @@ nextBoards3 = [[(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
         (12,"incididunt"), (13,""),(14,"ut")]]
 rightmost3 = [zboard5, zboard4, zboard3, zboard2, zboard1]
 stopSuccess3 = (== board3)
+stopFail3 :: [Matrix a] -> Bool
 stopFail3 = null
 
 testGenerateBoard5 :: Test
@@ -284,16 +290,16 @@ testNextBoards3 = TestCase $ assertEqual ""
 
 testGenerateBranch3 :: Test
 testGenerateBranch3 = TestCase $ assertEqual ""
-        rightmost3 (either undefined
-        fst $ runReader (generateBranch zboard1 [] [[]] blank3)
-                        (FS {
-                         stopSuccess = stopSuccess3,
-                         stopFail = stopFail3})
-                )
+        rightmost3 (snd $ runReader
+        (runStateT (generateBranch zboard1 [[]] blank3) [])
+        (FS {
+        stopSuccess = stopSuccess3,
+        stopFail = stopFail3})
+        )
 
-testSearch3 :: Test
-testSearch3 = TestCase $ assertEqual ""
-       [rightmost3] (searchFirst [[zboard1]] stopSuccess3 stopFail3 blank3)
+testSearchFirst3 :: Test
+testSearchFirst3 = TestCase $ assertEqual ""
+       rightmost3 (searchFirst' [[zboard1]] blank3 stopSuccess3 stopFail3)
 
 main :: IO Counts
 main = runTestTT $ TestList [
@@ -319,7 +325,7 @@ main = runTestTT $ TestList [
         testGenerateBranch1,
         testGenerateBranch2,
         testGenerateBranch3,
-        testSearch1,
-        testSearch2,
-        testSearch3
+        testSearchFirst1,
+        testSearchFirst2,
+        testSearchFirst3
          ]
