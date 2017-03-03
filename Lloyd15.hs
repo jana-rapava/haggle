@@ -17,7 +17,6 @@ data Matrix a = M {
                 } deriving (Eq, Show)
 data Swap a = S {
                 posFrom :: Int,
-                sym :: a,
                 posTo :: Int
                 } deriving (Eq, Show)
 
@@ -62,18 +61,17 @@ findIndex p b = do
                 (pos, _) <- find (p . snd) (content b)
                 return pos
 
-mkSwap :: (Int, a, Int) -> Swap a
-mkSwap (x,y,z) = S {posFrom = x, sym = y, posTo = z}
+mkSwap :: (Int, Int) -> Swap a
+mkSwap (x,y) = S {posFrom = x,  posTo = y}
 
 generateSwaps :: (Eq a) => (a -> Bool) -> Matrix a  -> [Swap a]
-generateSwaps blank b = map mkSwap $ zip3 (repeat blankPos) swapSyms swapPoss
+generateSwaps blank b = map mkSwap $ zip (repeat blankPos) swapPoss
                 where
                    boardHeight = height b
                    boardWidth = width b
                    blankPos = fromJust (findIndex blank b)
                    adjacent = computeAdjacent boardHeight boardWidth
                    swapPoss = adjacent !! blankPos
-                   swapSyms = map snd (map ((content b) !!) swapPoss)
 
 applySwap :: Matrix a -> Swap a -> Matrix a
 applySwap board s = mkMatrix (height board, width board,

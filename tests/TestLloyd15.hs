@@ -17,7 +17,7 @@ adjacent1 = [[1,4],[0,2,5],[1,3,6],[2,7],
         [4,9,12], [5,8,10,13], [6,9,11,14], [7,10,15],
         [8,13], [9,12,14], [10,13,15], [11, 14]]
 board1 = generateBoard boardHeight1 boardWidth1 cellvals1
-swaps1 = [S {posFrom = 15, sym = 'L', posTo = 11}, S {posFrom = 15, sym = 'O', posTo = 14}]
+swaps1 = [S {posFrom = 15, posTo = 11}, S {posFrom = 15, posTo = 14}]
 blank1 = (=='.')
 board1' = M { height = boardHeight1,
         width = boardWidth1,
@@ -84,7 +84,7 @@ testApplySwap1 = TestCase $ assertEqual ""
 
 testApplySwap2 :: Test
 testApplySwap2 = TestCase $ assertEqual ""
-        xboard2 (applySwap xboard1 (S { posFrom = 3, sym = 'D', posTo = 7}))
+        xboard2 (applySwap xboard1 (S { posFrom = 3, posTo = 7}))
 
 testNextBoards1 :: Test
 testNextBoards1 = TestCase $ assertEqual ""
@@ -110,7 +110,7 @@ cellvals2 = [1, 2, 3, 4, 5, 6, 7,
 adjacent2 = [[1,7],[0,2,8],[1,3,9],[2,4,10],[3,5,11],[4,6,12],[5,13],
         [0,8],[1,7,9],[2,8,10],[3,9,11],[4,10,12],[5,11,13],[6,12]]
 board2 = generateBoard boardHeight2 boardWidth2 cellvals2
-swaps2 = [S {posFrom = 13, sym = 7, posTo = 6}, S {posFrom = 13, sym = 13, posTo = 12}]
+swaps2 = [S {posFrom = 13, posTo = 6}, S {posFrom = 13, posTo = 12}]
 blank2 = (==0)
 board2' = M { height = boardHeight2,
         width = boardWidth2,
@@ -198,7 +198,7 @@ adjacent3 = [[1,3],[0,2,4],[1,5],
         [6,10,12],[7,9,11,13],[8,10,14],
         [9,13],[10,12,14],[11,13]]
 board3 = generateBoard boardHeight3 boardWidth3 cellvals3
-swaps3 = [S {posFrom = 14, sym = "tempor", posTo = 11}, S {posFrom = 14, sym = "ut", posTo = 13}]
+swaps3 = [S {posFrom = 14, posTo = 11}, S {posFrom = 14, posTo = 13}]
 blank3 = (=="")
 board3' = M { height = boardHeight3,
         width = boardWidth3,
