@@ -8,6 +8,7 @@ import Data.Maybe (catMaybes, fromJust)
 import Data.List (find, (\\))
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
+import Control.Monad.Trans.Maybe
 
 data Matrix a = M {
                 height :: Int,
@@ -102,24 +103,35 @@ data FunctionStore a = FS {
                         -- pick and prune will come here as well
                         }
 
-generateBranch :: (Eq a) => Matrix a -> [[Matrix a]] -> (a -> Bool) -> StateT [Matrix a] (Reader (FunctionStore a)) (Bool, [[Matrix a]])
-generateBranch b backlog blank = do
+generateBranch :: (Eq a) => Matrix a -> (a -> Bool) -> StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) Bool
+generateBranch b blank = do
         stopSuccess <- asks stopSuccess
         stopFail <- asks stopFail
-        path <- get
-        if (stopFail next) then return (False, backlog) else
-                if (stopSuccess b) then return (True, backlog) else
+        (path, backlog) <- get
+        if (stopSuccess b) then return True else
+                if (stopFail next) then return False else
                         let (nextBoard, bl) = pick (prune next path) in do
-                                path <- modify (b:)
-                                generateBranch nextBoard (bl:backlog) blank
-        where next = nextBoards [b] blank
+                                put (b:path, bl:backlog)
+                                generateBranch nextBoard blank
+                where next = nextBoards [b] blank
 
-searchFirst' :: (Eq a) => [[Matrix a]] -> (a -> Bool) -> (Matrix a ->  Bool) -> ([Matrix a] -> Bool) -> [Matrix a]
-searchFirst' [[]] _ _ _ = undefined
-searchFirst' ([]:backlog) blank stopSuccess stopFail = searchFirst' backlog blank stopSuccess stopFail
-searchFirst' ((b:bs):backlog) blank stopSuccess stopFail =
-        if res then snd st else searchFirst' backlog1 blank stopSuccess stopFail
-        where
-                st = runReader (runStateT (generateBranch b (bs:backlog) blank) []) (FS { stopSuccess = stopSuccess, stopFail = stopFail})
-                res = fst $ fst $ st
-                backlog1 = snd $ fst $ st
+searchFirst' :: (Eq a) => (a -> Bool) -> (Matrix a ->  Bool) -> ([Matrix a] -> Bool) -> State [[Matrix a]] (Maybe [Matrix a])
+searchFirst' blank stopSuccess stopFail = do
+        backlog <- get
+        case backlog of
+                [[]] -> return Nothing
+                ([]:bs) -> do
+                                put bs
+                                searchFirst' blank stopSuccess stopFail
+                ((b:bs):bss) -> if res then return (Just path) else do
+                                put backlog1
+                                searchFirst' blank stopSuccess stopFail
+                        where
+                                st = runReader (runStateT (generateBranch b blank) ([],bs:bss)) (FS { stopSuccess = stopSuccess, stopFail = stopFail})
+                                res = fst $ st
+                                path = fst $ snd $ st
+                                backlog1 = snd $ snd $ st
+
+searchFirst :: (Eq a) => Matrix a -> (a -> Bool) -> (Matrix a -> Bool) -> ([Matrix a] -> Bool) -> Maybe [Matrix a]
+searchFirst b blank stopSuccess stopFail = do
+        fst $ runState (searchFirst' blank stopSuccess stopFail) [[b]]
