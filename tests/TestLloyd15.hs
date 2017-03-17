@@ -3,6 +3,8 @@ module TestLloyd15 where
 import Test.HUnit
 import Lloyd15
 import Data.Maybe (fromJust)
+import Data.List (sortBy)
+import Data.Function (on)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
 
@@ -59,6 +61,33 @@ rightmost1 = [xboard3, xboard2, xboard1]
 stopSuccess1 = (== board1)
 stopFail1 :: [Matrix a] -> Bool
 stopFail1 = null
+-- heuristics 1: pick the board with lowest number of misplaced tiles
+doubleFold :: (b -> a -> a -> b) -> b -> [a] -> [a] -> b
+doubleFold f acc [] []  = acc
+doubleFold f acc (x:xs) (y:ys) = doubleFold f (f acc x y) xs ys
+
+xpick11 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
+xpick11 bs = (head res, tail res)
+        where
+                misplaced b1 b2 = doubleFold (\acc (_,x) (_,y) ->
+                                        if (x == y) then acc else acc + 1)
+                                 0 (content b1) (content b2)
+                res = map snd $ sortBy (compare `on` fst)
+                        (zip (map (misplaced board1) bs) bs)
+
+-- heuristics 2: pick the board with lowest sum of Manhattan distances from the goal configuration
+manhattan_sum :: Matrix a -> Matrix a -> Int
+manhattan_sum b1 b2 = sum $ liftM2 manhattan (content b1) (content b2)
+        where
+                row x = x `div` boardWidth1
+                column x = x `mod` boardHeight1
+                manhattan (x,_) (y,_) = abs (row x - row y) + abs (column x - column y)
+
+xpick12 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
+xpick12 bs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst)
+                        (zip (map (manhattan_sum board1) bs) bs)
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
