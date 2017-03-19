@@ -2,7 +2,7 @@ module TestLloyd15 where
 
 import Test.HUnit
 import Lloyd15
-import Data.Maybe (fromJust)
+import Data.Maybe (catMaybes, fromJust)
 import Data.List (sortBy)
 import Data.Function (on)
 import Control.Monad.Reader
@@ -66,12 +66,17 @@ doubleFold :: (b -> a -> a -> b) -> b -> [a] -> [a] -> b
 doubleFold f acc [] []  = acc
 doubleFold f acc (x:xs) (y:ys) = doubleFold f (f acc x y) xs ys
 
+misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
+misplaced b1 b2 = doubleFold (\acc (_,x) (_,y) ->
+                        if (x == y) then acc else acc + 1)
+                 0 (content b1) (content b2)
+--misplaced b1 b2 = fromJust $ collect 0 (map fromJust $ catMaybes (map ((flip bool2maybe) (+1)) $ zipWith (==) (content b1) (content b2)))
+--        where
+--                collect = foldl ($)
+
 xpick11 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
 xpick11 bs = (head res, tail res)
         where
-                misplaced b1 b2 = doubleFold (\acc (_,x) (_,y) ->
-                                        if (x == y) then acc else acc + 1)
-                                 0 (content b1) (content b2)
                 res = map snd $ sortBy (compare `on` fst)
                         (zip (map (misplaced board1) bs) bs)
 
@@ -174,6 +179,18 @@ rightmost2 = [yboard4, yboard3, yboard2, yboard1]
 stopSuccess2 = (== board2)
 stopFail2 :: [Matrix a] -> Bool
 stopFail2 = null
+
+xpick21 :: [Matrix Int] -> (Matrix Int, [Matrix Int])
+xpick21 bs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst)
+                        (zip (map (misplaced board2) bs) bs)
+
+xpick22 :: [Matrix Int] -> (Matrix Int, [Matrix Int])
+xpick22 bs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst)
+                        (zip (map (manhattan_sum board2) bs) bs)
 
 testGenerateBoard3 :: Test
 testGenerateBoard3 = TestCase $ assertEqual ""
@@ -291,6 +308,18 @@ rightmost3 = [zboard5, zboard4, zboard3, zboard2, zboard1]
 stopSuccess3 = (== board3)
 stopFail3 :: [Matrix a] -> Bool
 stopFail3 = null
+
+xpick31 :: [Matrix String] -> (Matrix String, [Matrix String])
+xpick31 bs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst)
+                        (zip (map (misplaced board3) bs) bs)
+
+xpick32 :: [Matrix String] -> (Matrix String, [Matrix String])
+xpick32 bs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst)
+                        (zip (map (manhattan_sum board3) bs) bs)
 
 testGenerateBoard5 :: Test
 testGenerateBoard5 = TestCase $ assertEqual ""
