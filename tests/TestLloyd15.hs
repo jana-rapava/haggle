@@ -62,17 +62,8 @@ stopSuccess1 = (== board1)
 stopFail1 :: [Matrix a] -> Bool
 stopFail1 = null
 -- heuristics 1: pick the board with lowest number of misplaced tiles
-doubleFold :: (b -> a -> a -> b) -> b -> [a] -> [a] -> b
-doubleFold f acc [] []  = acc
-doubleFold f acc (x:xs) (y:ys) = doubleFold f (f acc x y) xs ys
-
 misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
-misplaced b1 b2 = doubleFold (\acc (_,x) (_,y) ->
-                        if (x == y) then acc else acc + 1)
-                 0 (content b1) (content b2)
---misplaced b1 b2 = fromJust $ collect 0 (map fromJust $ catMaybes (map ((flip bool2maybe) (+1)) $ zipWith (==) (content b1) (content b2)))
---        where
---                collect = foldl ($)
+misplaced b1 b2 = length $ filter (== True) $ zipWith (==) (content b1) (content b2)
 
 xpick11 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
 xpick11 bs = (head res, tail res)
