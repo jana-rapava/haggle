@@ -61,15 +61,17 @@ rightmost1 = [xboard3, xboard2, xboard1]
 stopSuccess1 = (== board1)
 stopFail1 :: [Matrix a] -> Bool
 stopFail1 = null
+
+genPick :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
+genPick rank xs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
 -- heuristics 1: pick the board with lowest number of misplaced tiles
 misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
 misplaced b1 b2 = length $ filter (== True) $ zipWith (==) (content b1) (content b2)
 
 xpick11 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
-xpick11 bs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst)
-                        (zip (map (misplaced board1) bs) bs)
+xpick11 = genPick (misplaced board1)
 
 -- heuristics 2: pick the board with lowest sum of Manhattan distances from the goal configuration
 manhattan_sum :: Matrix a -> Matrix a -> Int
@@ -80,10 +82,7 @@ manhattan_sum b1 b2 = sum $ liftM2 manhattan (content b1) (content b2)
                 manhattan (x,_) (y,_) = abs (row x - row y) + abs (column x - column y)
 
 xpick12 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
-xpick12 bs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst)
-                        (zip (map (manhattan_sum board1) bs) bs)
+xpick12 = genPick (manhattan_sum board1)
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
@@ -172,16 +171,10 @@ stopFail2 :: [Matrix a] -> Bool
 stopFail2 = null
 
 xpick21 :: [Matrix Int] -> (Matrix Int, [Matrix Int])
-xpick21 bs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst)
-                        (zip (map (misplaced board2) bs) bs)
+xpick21 = genPick (misplaced board2)
 
 xpick22 :: [Matrix Int] -> (Matrix Int, [Matrix Int])
-xpick22 bs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst)
-                        (zip (map (manhattan_sum board2) bs) bs)
+xpick22 = genPick (manhattan_sum board2)
 
 testGenerateBoard3 :: Test
 testGenerateBoard3 = TestCase $ assertEqual ""
@@ -301,16 +294,10 @@ stopFail3 :: [Matrix a] -> Bool
 stopFail3 = null
 
 xpick31 :: [Matrix String] -> (Matrix String, [Matrix String])
-xpick31 bs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst)
-                        (zip (map (misplaced board3) bs) bs)
+xpick31 = genPick (misplaced board3)
 
 xpick32 :: [Matrix String] -> (Matrix String, [Matrix String])
-xpick32 bs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst)
-                        (zip (map (manhattan_sum board3) bs) bs)
+xpick32 = genPick (manhattan_sum board3)
 
 testGenerateBoard5 :: Test
 testGenerateBoard5 = TestCase $ assertEqual ""
