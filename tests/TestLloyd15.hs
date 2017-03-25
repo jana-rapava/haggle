@@ -120,7 +120,9 @@ testGenerateBranch1 = TestCase $ assertEqual ""
         (runStateT (generateBranch xboard1 blank1) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess1,
-        stopFail = stopFail1})
+        stopFail = stopFail1,
+        pick = pickBasic,
+        prune = pruneBasic})
         )
 
 testSearchFirst1 :: Test
@@ -208,7 +210,9 @@ testGenerateBranch2 = TestCase $ assertEqual ""
         (runStateT (generateBranch yboard1 blank2) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess2,
-        stopFail = stopFail2})
+        stopFail = stopFail2,
+        pick = pickBasic,
+        prune = pruneBasic})
         )
 
 testSearchFirst2 :: Test
@@ -331,7 +335,9 @@ testGenerateBranch3 = TestCase $ assertEqual ""
         (runStateT (generateBranch zboard1 blank3) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess3,
-        stopFail = stopFail3})
+        stopFail = stopFail3,
+        pick = pickBasic,
+        prune = pruneBasic})
         )
 
 testSearchFirst3 :: Test

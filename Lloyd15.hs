@@ -1,4 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE Rank2Types #-}
 
 module Lloyd15 where
 
@@ -87,24 +88,27 @@ nextBoards :: (Eq a) => [Matrix a] -> (a -> Bool)-> [Matrix a]
 nextBoards bs blank = join $ (liftM2 . liftM2) applySwap [bs] (liftM (generateSwaps blank) bs)
 
 -- this function determines the search order - change this to implement different heuristics
-pick :: [Matrix a] -> (Matrix a, [Matrix a])
-pick bs = (last bs, init bs)
+pickBasic :: [Matrix a] -> (Matrix a, [Matrix a])
+pickBasic bs = (last bs, init bs)
 
 -- this function prunes the branches of search space
-prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
+pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
 -- delete all items in l1 which appear in l2
-prune = (\\)
+pruneBasic = (\\)
 
 data FunctionStore a = FS {
                         stopSuccess :: Matrix a -> Bool,
-                        stopFail :: [Matrix a] -> Bool
-                        -- pick and prune will come here as well
+                        stopFail :: [Matrix a] -> Bool,
+                        pick :: [Matrix a] -> (Matrix a, [Matrix a]),
+                        prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
                         }
 
 generateBranch :: (Eq a) => Matrix a -> (a -> Bool) -> StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) Bool
 generateBranch b blank = do
         stopSuccess <- asks stopSuccess
         stopFail <- asks stopFail
+        pick <- asks pick
+        prune <- asks prune
         (path, backlog) <- get
         if (stopSuccess b) then return True else
                 if (stopFail next) then return False else
@@ -125,7 +129,7 @@ searchFirst' blank stopSuccess stopFail = do
                                 put backlog1
                                 searchFirst' blank stopSuccess stopFail
                         where
-                                st = runReader (runStateT (generateBranch b blank) ([],bs:bss)) (FS { stopSuccess = stopSuccess, stopFail = stopFail})
+                                st = runReader (runStateT (generateBranch b blank) ([],bs:bss)) (FS { stopSuccess = stopSuccess, stopFail = stopFail, pick = pickBasic, prune = pruneBasic})
                                 res = fst $ st
                                 path = fst $ snd $ st
                                 backlog1 = snd $ snd $ st
