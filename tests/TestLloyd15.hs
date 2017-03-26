@@ -3,11 +3,23 @@ module TestLloyd15 where
 import Test.HUnit
 import Lloyd15
 import Data.Maybe (catMaybes, fromJust)
-import Data.List (sortBy)
+import Data.List (sortBy, (\\))
 import Data.Function (on)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
 
+-- this function determines the search order - change this to implement different heuristics
+pickBasic :: [Matrix a] -> (Matrix a, [Matrix a])
+pickBasic bs = (last bs, init bs)
+
+-- this function prunes the branches of search space
+pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
+-- delete all items in l1 which appear in l2
+pruneBasic = (\\)
+
+--------------
+-- TESTCASE #1
+--------------
 boardHeight1 = 4
 boardWidth1 = 4
 cellvals1 = "ABCD\
@@ -125,6 +137,28 @@ testGenerateBranch1 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
+testGenerateBranch4 :: Test
+testGenerateBranch4 = TestCase $ assertEqual ""
+        rightmost1 (fst $ snd $ runReader
+        (runStateT (generateBranch xboard1 blank1) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick11,
+        prune = pruneBasic})
+        )
+
+testGenerateBranch5 :: Test
+testGenerateBranch5 = TestCase $ assertEqual ""
+        rightmost1 (fst $ snd $ runReader
+        (runStateT (generateBranch xboard1 blank1) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick11,
+        prune = pruneBasic})
+        )
+
 testSearchFirst1 :: Test
 testSearchFirst1 = TestCase $ assertEqual ""
        rightmost1 (fromJust $ searchFirst xboard1 blank1
@@ -217,6 +251,28 @@ testGenerateBranch2 = TestCase $ assertEqual ""
         stopSuccess = stopSuccess2,
         stopFail = stopFail2,
         pick = pickBasic,
+        prune = pruneBasic})
+        )
+
+testGenerateBranch6 :: Test
+testGenerateBranch6 = TestCase $ assertEqual ""
+        rightmost2 (fst $ snd $ runReader
+        (runStateT (generateBranch yboard1 blank2) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess2,
+        stopFail = stopFail2,
+        pick = xpick21,
+        prune = pruneBasic})
+        )
+
+testGenerateBranch7 :: Test
+testGenerateBranch7 = TestCase $ assertEqual ""
+        rightmost2 (fst $ snd $ runReader
+        (runStateT (generateBranch yboard1 blank2) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess2,
+        stopFail = stopFail2,
+        pick = xpick22,
         prune = pruneBasic})
         )
 
@@ -350,6 +406,28 @@ testGenerateBranch3 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
+testGenerateBranch8 :: Test
+testGenerateBranch8 = TestCase $ assertEqual ""
+        rightmost3 (fst $ snd $ runReader
+        (runStateT (generateBranch zboard1 blank3) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess3,
+        stopFail = stopFail3,
+        pick = xpick31,
+        prune = pruneBasic})
+        )
+
+testGenerateBranch9 :: Test
+testGenerateBranch9 = TestCase $ assertEqual ""
+        rightmost3 (fst $ snd $ runReader
+        (runStateT (generateBranch zboard1 blank3) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess3,
+        stopFail = stopFail3,
+        pick = xpick32,
+        prune = pruneBasic})
+        )
+
 testSearchFirst3 :: Test
 testSearchFirst3 = TestCase $ assertEqual ""
        rightmost3 (fromJust $ searchFirst zboard1 blank3
@@ -384,6 +462,9 @@ main = runTestTT $ TestList [
         testGenerateBranch1,
         testGenerateBranch2,
         testGenerateBranch3,
+        testGenerateBranch4,
+        testGenerateBranch6,
+        testGenerateBranch8,
         testSearchFirst1,
         testSearchFirst2,
         testSearchFirst3

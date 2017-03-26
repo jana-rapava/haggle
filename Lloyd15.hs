@@ -6,7 +6,7 @@ module Lloyd15 where
 import Control.Exception (assert)
 import Control.Monad (join, liftM, liftM2)
 import Data.Maybe (catMaybes, fromJust)
-import Data.List (find, (\\))
+import Data.List (find)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
@@ -87,14 +87,6 @@ applySwap board s = mkMatrix (height board, width board,
 nextBoards :: (Eq a) => [Matrix a] -> (a -> Bool)-> [Matrix a]
 nextBoards bs blank = join $ (liftM2 . liftM2) applySwap [bs] (liftM (generateSwaps blank) bs)
 
--- this function determines the search order - change this to implement different heuristics
-pickBasic :: [Matrix a] -> (Matrix a, [Matrix a])
-pickBasic bs = (last bs, init bs)
-
--- this function prunes the branches of search space
-pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
--- delete all items in l1 which appear in l2
-pruneBasic = (\\)
 
 data FunctionStore a = FS {
                         stopSuccess :: Matrix a -> Bool,
