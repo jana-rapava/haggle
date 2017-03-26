@@ -80,7 +80,7 @@ genPick rank xs = (head res, tail res)
                 res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
 -- heuristics 1: pick the board with lowest number of misplaced tiles
 misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
-misplaced b1 b2 = length $ filter (== True) $ zipWith (==) (content b1) (content b2)
+misplaced b1 b2 = length $ filter (== False) $ zipWith (==) (content b1) (content b2)
 
 xpick11 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
 xpick11 = genPick (misplaced board1)
