@@ -17,6 +17,26 @@ pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
 -- delete all items in l1 which appear in l2
 pruneBasic = (\\)
 
+genPick :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
+genPick rank xs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
+
+-- heuristics 1: pick the board with lowest number of misplaced tiles
+misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
+misplaced b1 b2 = length $ filter (== False) $ zipWith (==) (content b1) (content b2)
+
+-- heuristics 2: pick the board with lowest sum of Manhattan distances from the goal configuration
+manhattan :: (Eq a) => Int -> Int -> Matrix a -> (Int, a) -> Int
+manhattan height width b (n,x) = abs (row n - row m) + abs (column n - column m)
+        where
+                m = fromJust $ findIndex (==x) b
+                row x = x `div` width
+                column x = x `mod` height
+
+manhattan_sum :: (Eq a) => Int -> Int -> Matrix a -> Matrix a -> Int
+manhattan_sum height width b1 b2 = sum $ map (manhattan height width b1) (content b2)
+
 --------------
 -- TESTCASE #1
 --------------
@@ -74,27 +94,11 @@ stopSuccess1 = (== board1)
 stopFail1 :: [Matrix a] -> Bool
 stopFail1 = null
 
-genPick :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
-genPick rank xs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
--- heuristics 1: pick the board with lowest number of misplaced tiles
-misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
-misplaced b1 b2 = length $ filter (== False) $ zipWith (==) (content b1) (content b2)
-
 xpick11 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
 xpick11 = genPick (misplaced board1)
 
--- heuristics 2: pick the board with lowest sum of Manhattan distances from the goal configuration
-manhattan_sum :: Matrix a -> Matrix a -> Int
-manhattan_sum b1 b2 = sum $ liftM2 manhattan (content b1) (content b2)
-        where
-                row x = x `div` boardWidth1
-                column x = x `mod` boardHeight1
-                manhattan (x,_) (y,_) = abs (row x - row y) + abs (column x - column y)
-
 xpick12 :: [Matrix Char] -> (Matrix Char, [Matrix Char])
-xpick12 = genPick (manhattan_sum board1)
+xpick12 = genPick (manhattan_sum boardHeight1 boardWidth1 board1)
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
@@ -215,7 +219,7 @@ xpick21 :: [Matrix Int] -> (Matrix Int, [Matrix Int])
 xpick21 = genPick (misplaced board2)
 
 xpick22 :: [Matrix Int] -> (Matrix Int, [Matrix Int])
-xpick22 = genPick (manhattan_sum board2)
+xpick22 = genPick (manhattan_sum boardHeight2 boardWidth2 board2)
 
 testGenerateBoard3 :: Test
 testGenerateBoard3 = TestCase $ assertEqual ""
@@ -367,7 +371,7 @@ xpick31 :: [Matrix String] -> (Matrix String, [Matrix String])
 xpick31 = genPick (misplaced board3)
 
 xpick32 :: [Matrix String] -> (Matrix String, [Matrix String])
-xpick32 = genPick (manhattan_sum board3)
+xpick32 = genPick (manhattan_sum boardHeight3 boardWidth3 board3)
 
 testGenerateBoard5 :: Test
 testGenerateBoard5 = TestCase $ assertEqual ""
@@ -463,8 +467,11 @@ main = runTestTT $ TestList [
         testGenerateBranch2,
         testGenerateBranch3,
         testGenerateBranch4,
+        testGenerateBranch5,
         testGenerateBranch6,
+        testGenerateBranch7,
         testGenerateBranch8,
+        testGenerateBranch9,
         testSearchFirst1,
         testSearchFirst2,
         testSearchFirst3
