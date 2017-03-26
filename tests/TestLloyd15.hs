@@ -127,8 +127,13 @@ testGenerateBranch1 = TestCase $ assertEqual ""
 
 testSearchFirst1 :: Test
 testSearchFirst1 = TestCase $ assertEqual ""
-       rightmost1 (fromJust $ searchFirst xboard1 blank1 stopSuccess1 stopFail1)
-
+       rightmost1 (fromJust $ searchFirst xboard1 blank1
+       (FS {
+       stopSuccess = stopSuccess1,
+       stopFail = stopFail1,
+       pick = pickBasic,
+       prune = pruneBasic})
+       )
 boardHeight2 = 2
 boardWidth2 = 7
 cellvals2 = [1, 2, 3, 4, 5, 6, 7,
@@ -217,8 +222,13 @@ testGenerateBranch2 = TestCase $ assertEqual ""
 
 testSearchFirst2 :: Test
 testSearchFirst2 = TestCase $ assertEqual ""
-       rightmost2 (fromJust $ searchFirst yboard1 blank2 stopSuccess2 stopFail2)
-
+       rightmost2 (fromJust $ searchFirst yboard1 blank2
+       (FS {
+       stopSuccess = stopSuccess2,
+       stopFail = stopFail2,
+       pick = pickBasic,
+       prune = pruneBasic})
+       )
 boardHeight3 = 5
 boardWidth3 = 3
 cellvals3 = ["Lorem", "ipsum", "dolor",
@@ -342,7 +352,13 @@ testGenerateBranch3 = TestCase $ assertEqual ""
 
 testSearchFirst3 :: Test
 testSearchFirst3 = TestCase $ assertEqual ""
-       rightmost3 (fromJust $ searchFirst zboard1 blank3 stopSuccess3 stopFail3)
+       rightmost3 (fromJust $ searchFirst zboard1 blank3
+       (FS {
+       stopSuccess = stopSuccess3,
+       stopFail = stopFail3,
+       pick = pickBasic,
+       prune = pruneBasic})
+       )
 
 main :: IO Counts
 main = runTestTT $ TestList [

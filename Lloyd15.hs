@@ -117,23 +117,23 @@ generateBranch b blank = do
                                 generateBranch nextBoard blank
                 where next = nextBoards [b] blank
 
-searchFirst' :: (Eq a) => (a -> Bool) -> (Matrix a ->  Bool) -> ([Matrix a] -> Bool) -> State [[Matrix a]] (Maybe [Matrix a])
-searchFirst' blank stopSuccess stopFail = do
+searchFirst' :: (Eq a) => (a -> Bool) -> FunctionStore a -> State [[Matrix a]] (Maybe [Matrix a])
+searchFirst' blank fs = do
         backlog <- get
         case backlog of
                 [[]] -> return Nothing
                 ([]:bs) -> do
                                 put bs
-                                searchFirst' blank stopSuccess stopFail
+                                searchFirst' blank fs
                 ((b:bs):bss) -> if res then return (Just path) else do
                                 put backlog1
-                                searchFirst' blank stopSuccess stopFail
+                                searchFirst' blank fs
                         where
-                                st = runReader (runStateT (generateBranch b blank) ([],bs:bss)) (FS { stopSuccess = stopSuccess, stopFail = stopFail, pick = pickBasic, prune = pruneBasic})
+                                st = runReader (runStateT (generateBranch b blank) ([], bs:bss)) fs
                                 res = fst $ st
                                 path = fst $ snd $ st
                                 backlog1 = snd $ snd $ st
 
-searchFirst :: (Eq a) => Matrix a -> (a -> Bool) -> (Matrix a -> Bool) -> ([Matrix a] -> Bool) -> Maybe [Matrix a]
-searchFirst b blank stopSuccess stopFail = do
-        fst $ runState (searchFirst' blank stopSuccess stopFail) [[b]]
+searchFirst :: (Eq a) => Matrix a -> (a -> Bool) -> FunctionStore a -> Maybe [Matrix a]
+searchFirst b blank fs = do
+        fst $ runState (searchFirst' blank fs) [[b]]
