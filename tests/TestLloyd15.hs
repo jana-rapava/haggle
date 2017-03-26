@@ -172,6 +172,30 @@ testSearchFirst1 = TestCase $ assertEqual ""
        pick = pickBasic,
        prune = pruneBasic})
        )
+
+testSearchFirst4 :: Test
+testSearchFirst4 = TestCase $ assertEqual ""
+        rightmost1 (fromJust $ searchFirst xboard1 blank1
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick11,
+        prune = pruneBasic})
+        )
+
+testSearchFirst5 :: Test
+testSearchFirst5 = TestCase $ assertEqual ""
+        rightmost1 (fromJust $ searchFirst xboard1 blank1
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick12,
+        prune = pruneBasic})
+        )
+
+--------------
+-- TESTCASE #2
+--------------
 boardHeight2 = 2
 boardWidth2 = 7
 cellvals2 = [1, 2, 3, 4, 5, 6, 7,
@@ -289,6 +313,30 @@ testSearchFirst2 = TestCase $ assertEqual ""
        pick = pickBasic,
        prune = pruneBasic})
        )
+
+testSearchFirst6 :: Test
+testSearchFirst6 = TestCase $ assertEqual ""
+       rightmost2 (fromJust $ searchFirst yboard1 blank2
+       (FS {
+       stopSuccess = stopSuccess2,
+       stopFail = stopFail2,
+       pick = xpick21,
+       prune = pruneBasic})
+       )
+
+testSearchFirst7 :: Test
+testSearchFirst7 = TestCase $ assertEqual ""
+       rightmost2 (fromJust $ searchFirst yboard1 blank2
+       (FS {
+       stopSuccess = stopSuccess2,
+       stopFail = stopFail2,
+       pick = xpick22,
+       prune = pruneBasic})
+       )
+
+--------------
+-- TESTCASE #3
+--------------
 boardHeight3 = 5
 boardWidth3 = 3
 cellvals3 = ["Lorem", "ipsum", "dolor",
@@ -442,6 +490,26 @@ testSearchFirst3 = TestCase $ assertEqual ""
        prune = pruneBasic})
        )
 
+testSearchFirst8 :: Test
+testSearchFirst8 = TestCase $ assertEqual ""
+       rightmost3 (fromJust $ searchFirst zboard1 blank3
+       (FS {
+       stopSuccess = stopSuccess3,
+       stopFail = stopFail3,
+       pick = xpick31,
+       prune = pruneBasic})
+       )
+
+testSearchFirst9 :: Test
+testSearchFirst9 = TestCase $ assertEqual ""
+       rightmost3 (fromJust $ searchFirst zboard1 blank3
+       (FS {
+       stopSuccess = stopSuccess3,
+       stopFail = stopFail3,
+       pick = xpick32,
+       prune = pruneBasic})
+       )
+
 main :: IO Counts
 main = runTestTT $ TestList [
         testGenerateBoard1,
@@ -474,5 +542,11 @@ main = runTestTT $ TestList [
         testGenerateBranch9,
         testSearchFirst1,
         testSearchFirst2,
-        testSearchFirst3
+        testSearchFirst3,
+        testSearchFirst4,
+        testSearchFirst5,
+        testSearchFirst6,
+        testSearchFirst7,
+        testSearchFirst8,
+        testSearchFirst9
          ]
