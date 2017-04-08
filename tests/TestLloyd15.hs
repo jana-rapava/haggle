@@ -81,6 +81,13 @@ xboard3 = M { height = boardHeight1,
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'.'),
         (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
+xxboard1 = M { height = boardHeight1,
+        width = boardWidth1,
+        content =
+        [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'L'),
+        (12,'M'), (13, 'N'), (14,'.'), (15,'O')]}
 nextBoards1 = [[(0,'A'), (1,'B'), (2,'C'), (3,'D'),
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'.'),
@@ -190,6 +197,16 @@ testSearchFirst5 = TestCase $ assertEqual ""
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
         pick = xpick12,
+        prune = pruneBasic})
+        )
+
+testSearchFirst10 :: Test
+testSearchFirst10 = TestCase $ assertEqual ""
+        [xxboard1] (fromJust $ searchFirst xxboard1 blank1
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = pickBasic,
         prune = pruneBasic})
         )
 
@@ -548,5 +565,6 @@ main = runTestTT $ TestList [
         testSearchFirst6,
         testSearchFirst7,
         testSearchFirst8,
-        testSearchFirst9
-         ]
+        testSearchFirst9,
+        testSearchFirst10
+        ]
