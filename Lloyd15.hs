@@ -95,37 +95,51 @@ data FunctionStore a = FS {
                         prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
                         }
 
-generateBranch :: (Eq a) => Matrix a -> (a -> Bool) -> StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) Bool
-generateBranch b blank = do
+-- return from recursion until we find a branching, manipulate path and backlog accordingly
+selectPromising :: (Eq a) => (a -> Bool) -> ([Matrix a] -> [Matrix a] -> [Matrix a]) -> ([Matrix a] -> Bool) -> [[Matrix a]] -> [Matrix a] -> Maybe (Matrix a, [[Matrix a]], [Matrix a])
+selectPromising _ _ _ [[]] _ = Nothing
+-- we are in the root, going down a different branch
+selectPromising blank prune stopFail ([]:((b:bs):bss)) [] =
+        if stopFail next then selectPromising blank prune stopFail (bs:bss) [] else Just (b, bs:bss, [])
+                where
+                        next = prune (nextBoards [b] blank) [b]
+-- we are in the child node, going down a different branch
+selectPromising blank prune stopFail ([]:((b:bs):bss)) path@(p:ps) =
+        if stopFail next then selectPromising blank prune stopFail (bs:bss) ps else Just (b, bs:bss, ps)
+                where
+                        next = prune (nextBoards [b] blank) (b:path)
+-- should never happen, but compiler would complain otherwise
+selectPromising _ _ _ ((b:bs):bss) [] = undefined
+-- we are in a child node, going down the same branch
+selectPromising blank prune stopFail ((b:bs):bss) path@(p:ps) =
+        if stopFail next then selectPromising blank prune stopFail (bs:bss) ps else Just (b, bs:bss, ps)
+                where
+                        next = prune (nextBoards [b] blank) (b:path)
+
+searchFirst' :: (Eq a) => Matrix a -> (a -> Bool) -> StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) Bool
+searchFirst' b blank = do
         stopSuccess <- asks stopSuccess
         stopFail <- asks stopFail
         pick <- asks pick
         prune <- asks prune
         (path, backlog) <- get
         if (stopSuccess b) then return True else
-                if (stopFail next) then return False else
-                        let (nextBoard, bl) = pick (prune next path) in do
-                                put (b:path, bl:backlog)
-                                generateBranch nextBoard blank
+                if (stopFail next)
+                        then
+                                case selectPromising blank prune stopFail backlog path of
+                                        Nothing -> return False
+                                        Just (next2, backlog2, path2) -> do
+                                                put (path2, backlog2)
+                                                searchFirst' next2 blank
+                        else
+                                let (nextBoard, bl) = pick (prune next path) in do
+                                        put (b:path, bl:backlog)
+                                        searchFirst' nextBoard blank
                 where next = nextBoards [b] blank
 
-searchFirst' :: (Eq a) => (a -> Bool) -> FunctionStore a -> State [[Matrix a]] (Maybe [Matrix a])
-searchFirst' blank fs = do
-        backlog <- get
-        case backlog of
-                [[]] -> return Nothing
-                ([]:bs) -> do
-                                put bs
-                                searchFirst' blank fs
-                ((b:bs):bss) -> if res then return (Just path) else do
-                                put backlog1
-                                searchFirst' blank fs
-                        where
-                                st = runReader (runStateT (generateBranch b blank) ([], bs:bss)) fs
-                                res = fst $ st
-                                path = fst $ snd $ st
-                                backlog1 = snd $ snd $ st
-
 searchFirst :: (Eq a) => Matrix a -> (a -> Bool) -> FunctionStore a -> Maybe [Matrix a]
-searchFirst b blank fs = do
-        fst $ runState (searchFirst' blank fs) [[b]]
+searchFirst b blank fs = case res of
+                        [] -> Nothing
+                        (x:xs) -> Just (x:xs)
+        where res = fst $ snd $ runReader (runStateT (searchFirst' b blank) ([],[[b]])) fs
+

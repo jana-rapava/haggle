@@ -81,6 +81,27 @@ xboard3 = M { height = boardHeight1,
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'.'),
         (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
+xboard4 = M { height = boardHeight1,
+        width = boardWidth1,
+        content =
+        [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'.'), (11,'K'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
+xboard5 = M { height = boardHeight1,
+        width = boardWidth1,
+        content =
+        [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'.'), (7,'G'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'H'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
+xboard6 = M { height = boardHeight1,
+        width = boardWidth1,
+        content =
+        [(0,'A'), (1,'B'), (2,'.'), (3,'C'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'D'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'H'),
+        (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
 xxboard1 = M { height = boardHeight1,
         width = boardWidth1,
         content =
@@ -96,6 +117,7 @@ nextBoards1 = [[(0,'A'), (1,'B'), (2,'C'), (3,'D'),
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'L'),
         (12,'M'), (13,'N'), (14,'.'), (15,'O')]]
+xbacklog1 = [[xboard4], [xboard5], [xboard6],[]]
 rightmost1 = [xboard3, xboard2, xboard1]
 stopSuccess1 = (== board1)
 stopFail1 :: [Matrix a] -> Bool
@@ -137,10 +159,10 @@ testNextBoards1 :: Test
 testNextBoards1 = TestCase $ assertEqual ""
         nextBoards1 (map content $ nextBoards [board1] blank1)
 
-testGenerateBranch1 :: Test
-testGenerateBranch1 = TestCase $ assertEqual ""
+testSearchFirst'1_1 :: Test
+testSearchFirst'1_1 = TestCase $ assertEqual ""
         rightmost1 (fst $ snd $ runReader
-        (runStateT (generateBranch xboard1 blank1) ([],[[]]))
+        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
@@ -148,10 +170,32 @@ testGenerateBranch1 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
-testGenerateBranch4 :: Test
-testGenerateBranch4 = TestCase $ assertEqual ""
+testSearchFirst'1_2 :: Test
+testSearchFirst'1_2 = TestCase $ assertEqual ""
+        True (fst $ runReader
+        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = pickBasic,
+        prune = pruneBasic})
+        )
+
+testSearchFirst'1_3 :: Test
+testSearchFirst'1_3 = TestCase $ assertEqual ""
+        xbacklog1 (snd $ snd $ runReader
+        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = pickBasic,
+        prune = pruneBasic})
+        )
+
+testSearchFirst'4_1 :: Test
+testSearchFirst'4_1 = TestCase $ assertEqual ""
         rightmost1 (fst $ snd $ runReader
-        (runStateT (generateBranch xboard1 blank1) ([],[[]]))
+        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
@@ -159,14 +203,36 @@ testGenerateBranch4 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
-testGenerateBranch5 :: Test
-testGenerateBranch5 = TestCase $ assertEqual ""
-        rightmost1 (fst $ snd $ runReader
-        (runStateT (generateBranch xboard1 blank1) ([],[[]]))
+testSearchFirst'4_2 :: Test
+testSearchFirst'4_2 = TestCase $ assertEqual ""
+        xbacklog1 (snd $ snd $ runReader
+        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
         pick = xpick11,
+        prune = pruneBasic})
+        )
+
+testSearchFirst'5_1 :: Test
+testSearchFirst'5_1 = TestCase $ assertEqual ""
+        rightmost1 (fst $ snd $ runReader
+        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick12,
+        prune = pruneBasic})
+        )
+
+testSearchFirst'5_2 :: Test
+testSearchFirst'5_2 = TestCase $ assertEqual ""
+        xbacklog1 (snd $ snd $ runReader
+        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick12,
         prune = pruneBasic})
         )
 
@@ -288,10 +354,10 @@ testNextBoards2 :: Test
 testNextBoards2 = TestCase $ assertEqual ""
         nextBoards2 (map content $ nextBoards [board2] blank2)
 
-testGenerateBranch2 :: Test
-testGenerateBranch2 = TestCase $ assertEqual ""
+testSearchFirst'2 :: Test
+testSearchFirst'2 = TestCase $ assertEqual ""
         rightmost2 (fst $ snd $ runReader
-        (runStateT (generateBranch yboard1 blank2) ([],[[]]))
+        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess2,
         stopFail = stopFail2,
@@ -299,10 +365,10 @@ testGenerateBranch2 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
-testGenerateBranch6 :: Test
-testGenerateBranch6 = TestCase $ assertEqual ""
+testSearchFirst'6 :: Test
+testSearchFirst'6 = TestCase $ assertEqual ""
         rightmost2 (fst $ snd $ runReader
-        (runStateT (generateBranch yboard1 blank2) ([],[[]]))
+        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess2,
         stopFail = stopFail2,
@@ -310,10 +376,10 @@ testGenerateBranch6 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
-testGenerateBranch7 :: Test
-testGenerateBranch7 = TestCase $ assertEqual ""
+testSearchFirst'7 :: Test
+testSearchFirst'7 = TestCase $ assertEqual ""
         rightmost2 (fst $ snd $ runReader
-        (runStateT (generateBranch yboard1 blank2) ([],[[]]))
+        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess2,
         stopFail = stopFail2,
@@ -464,10 +530,10 @@ testNextBoards3 :: Test
 testNextBoards3 = TestCase $ assertEqual ""
         nextBoards3 (map content $ nextBoards [board3] blank3)
 
-testGenerateBranch3 :: Test
-testGenerateBranch3 = TestCase $ assertEqual ""
+testSearchFirst'3 :: Test
+testSearchFirst'3 = TestCase $ assertEqual ""
         rightmost3 (fst $ snd $ runReader
-        (runStateT (generateBranch zboard1 blank3) ([],[[]]))
+        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess3,
         stopFail = stopFail3,
@@ -475,10 +541,10 @@ testGenerateBranch3 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
-testGenerateBranch8 :: Test
-testGenerateBranch8 = TestCase $ assertEqual ""
+testSearchFirst'8 :: Test
+testSearchFirst'8 = TestCase $ assertEqual ""
         rightmost3 (fst $ snd $ runReader
-        (runStateT (generateBranch zboard1 blank3) ([],[[]]))
+        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess3,
         stopFail = stopFail3,
@@ -486,10 +552,10 @@ testGenerateBranch8 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
-testGenerateBranch9 :: Test
-testGenerateBranch9 = TestCase $ assertEqual ""
+testSearchFirst'9 :: Test
+testSearchFirst'9 = TestCase $ assertEqual ""
         rightmost3 (fst $ snd $ runReader
-        (runStateT (generateBranch zboard1 blank3) ([],[[]]))
+        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
         (FS {
         stopSuccess = stopSuccess3,
         stopFail = stopFail3,
@@ -548,15 +614,19 @@ main = runTestTT $ TestList [
         testNextBoards1,
         testNextBoards2,
         testNextBoards3,
-        testGenerateBranch1,
-        testGenerateBranch2,
-        testGenerateBranch3,
-        testGenerateBranch4,
-        testGenerateBranch5,
-        testGenerateBranch6,
-        testGenerateBranch7,
-        testGenerateBranch8,
-        testGenerateBranch9,
+        testSearchFirst'1_1,
+        testSearchFirst'1_2,
+        testSearchFirst'1_3,
+        testSearchFirst'2,
+        testSearchFirst'3,
+        testSearchFirst'4_1,
+        testSearchFirst'4_2,
+        testSearchFirst'5_1,
+        testSearchFirst'5_2,
+        testSearchFirst'6,
+        testSearchFirst'7,
+        testSearchFirst'8,
+        testSearchFirst'9,
         testSearchFirst1,
         testSearchFirst2,
         testSearchFirst3,
