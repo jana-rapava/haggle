@@ -10,6 +10,7 @@ import Data.List (find)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
+import Debug.Trace
 
 data Matrix a = M {
                 height :: Int,
@@ -21,14 +22,15 @@ data Swap a = S {
                 posTo :: Int
                 } deriving (Eq, Show)
 
+
 mkMatrix :: (Int, Int, [(Int,a)]) -> Matrix a
 mkMatrix (h, w, d) = M {height = h, width = w, content = d}
 
 generateBoard :: Int -> Int -> [a] -> Matrix a
 generateBoard boardHeight boardWidth cellvals =
-        let size = boardHeight * boardWidth in
-                assert (length cellvals == size)
-                mkMatrix $ (boardHeight, boardWidth, zip [0..size-1] cellvals)
+    let size = boardHeight * boardWidth in
+        assert (length cellvals == size)
+        mkMatrix $ (boardHeight, boardWidth, zip [0..size-1] cellvals)
 
 divisible :: Int -> Int -> Bool
 divisible x m = x `mod` m == 0
@@ -38,24 +40,21 @@ bool2maybe p x = if p then Just x else Nothing
 
 grow :: Int -> Int -> Int -> [Int]
 grow boardHeight boardWidth seed =
-        let
-                size = boardHeight * boardWidth
-                x %- y = do
-                        diff2 <- bool2maybe (diff >= 0) diff
-                        bool2maybe (y /= 1 || (y == 1 && not (divisible x boardWidth))) diff2
-                        where diff = x - y
-                x %+ y = do
-                                sum2 <- bool2maybe (sum < size) sum
-                                bool2maybe (y /= 1 || (y == 1 && not (divisible sum boardWidth))) sum2
-                        where sum = x + y
-
-
-        in
-                catMaybes [seed %- boardWidth, seed %- 1, seed %+ 1, seed %+ boardWidth]
+    let
+        size = boardHeight * boardWidth
+        x %- y = do
+                diff2 <- bool2maybe (diff >= 0) diff
+                bool2maybe (y /= 1 || (y == 1 && not (divisible x boardWidth))) diff2
+                    where diff = x - y
+        x %+ y = do
+                sum2 <- bool2maybe (sum < size) sum
+                bool2maybe (y /= 1 || (y == 1 && not (divisible sum boardWidth))) sum2
+                    where sum = x + y
+    in catMaybes [seed %- boardWidth, seed %- 1, seed %+ 1, seed %+ boardWidth]
 
 computeAdjacent :: Int -> Int -> [[Int]]
 computeAdjacent boardHeight boardWidth = [grow boardHeight boardWidth seed | seed <- [0..size-1]]
-        where size = boardHeight * boardWidth
+    where size = boardHeight * boardWidth
 
 findIndex :: (a -> Bool) -> Matrix a -> Maybe Int
 findIndex p b = do
@@ -67,79 +66,146 @@ mkSwap (x,y) = S {posFrom = x,  posTo = y}
 
 generateSwaps :: (Eq a) => (a -> Bool) -> Matrix a  -> [Swap a]
 generateSwaps blank b = map mkSwap $ zip (repeat blankPos) swapPoss
-                where
-                   boardHeight = height b
-                   boardWidth = width b
-                   blankPos = fromJust (findIndex blank b)
-                   adjacent = computeAdjacent boardHeight boardWidth
-                   swapPoss = adjacent !! blankPos
+    where
+        boardHeight = height b
+        boardWidth = width b
+        blankPos = fromJust (findIndex blank b)
+        adjacent = computeAdjacent boardHeight boardWidth
+        swapPoss = adjacent !! blankPos
 
 applySwap :: Matrix a -> Swap a -> Matrix a
 applySwap board s = mkMatrix (height board, width board,
                         l3 ++ (pos1, snd x):l4 ++ (pos2, snd y):l2)
-                where
-                        b = content board
-                        pos1 = min (posFrom s) (posTo s)
-                        pos2 = max (posFrom s) (posTo s)
-                        (l1,x:l2) = splitAt pos2 b
-                        (l3,y:l4) = splitAt pos1 l1
+    where
+        b = content board
+        pos1 = min (posFrom s) (posTo s)
+        pos2 = max (posFrom s) (posTo s)
+        (l1,x:l2) = splitAt pos2 b
+        (l3,y:l4) = splitAt pos1 l1
 
 nextBoards :: (Eq a) => [Matrix a] -> (a -> Bool)-> [Matrix a]
 nextBoards bs blank = join $ (liftM2 . liftM2) applySwap [bs] (liftM (generateSwaps blank) bs)
 
 
-data FunctionStore a = FS {
-                        stopSuccess :: Matrix a -> Bool,
-                        stopFail :: [Matrix a] -> Bool,
-                        pick :: [Matrix a] -> (Matrix a, [Matrix a]),
-                        prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
-                        }
+data FunctionStore a =
+    FS {
+        stopSuccess :: Matrix a -> Bool,
+        stopFail :: [Matrix a] -> Bool,
+        pick :: [Matrix a] -> (Matrix a, [Matrix a]),
+        prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
+        }
 
 -- return from recursion until we find a branching, manipulate path and backlog accordingly
-selectPromising :: (Eq a) => (a -> Bool) -> ([Matrix a] -> [Matrix a] -> [Matrix a]) -> ([Matrix a] -> Bool) -> [[Matrix a]] -> [Matrix a] -> Maybe (Matrix a, [[Matrix a]], [Matrix a])
+selectPromising :: (Eq a) =>
+        (a -> Bool) ->
+        ([Matrix a] -> [Matrix a] -> [Matrix a]) ->
+        ([Matrix a] -> Bool) ->
+        [[Matrix a]] ->
+        [Matrix a] ->
+        Maybe (Matrix a, [[Matrix a]], [Matrix a])
+
 selectPromising _ _ _ [[]] _ = Nothing
+
 -- we are in the root, going down a different branch
 selectPromising blank prune stopFail ([]:((b:bs):bss)) [] =
-        if stopFail next then selectPromising blank prune stopFail (bs:bss) [] else Just (b, bs:bss, [])
-                where
-                        next = prune (nextBoards [b] blank) [b]
+    if stopFail next then
+        selectPromising blank prune stopFail (bs:bss) [] else
+        Just (b, bs:bss, [])
+    where next = prune (nextBoards [b] blank) [b]
+
 -- we are in the child node, going down a different branch
 selectPromising blank prune stopFail ([]:((b:bs):bss)) path@(p:ps) =
-        if stopFail next then selectPromising blank prune stopFail (bs:bss) ps else Just (b, bs:bss, ps)
-                where
-                        next = prune (nextBoards [b] blank) (b:path)
+    if stopFail next then
+        selectPromising blank prune stopFail (bs:bss) ps else
+        Just (b, bs:bss, ps)
+    where next = prune (nextBoards [b] blank) (b:path)
+
 -- should never happen, but compiler would complain otherwise
 selectPromising _ _ _ ((b:bs):bss) [] = undefined
+
 -- we are in a child node, going down the same branch
 selectPromising blank prune stopFail ((b:bs):bss) path@(p:ps) =
-        if stopFail next then selectPromising blank prune stopFail (bs:bss) ps else Just (b, bs:bss, ps)
-                where
-                        next = prune (nextBoards [b] blank) (b:path)
+   if stopFail next then
+        selectPromising blank prune stopFail (bs:bss) ps else
+        Just (b, bs:bss, ps)
+   where next = prune (nextBoards [b] blank) (b:path)
 
-searchFirst' :: (Eq a) => Matrix a -> (a -> Bool) -> StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) Bool
-searchFirst' b blank = do
-        stopSuccess <- asks stopSuccess
-        stopFail <- asks stopFail
-        pick <- asks pick
-        prune <- asks prune
-        (path, backlog) <- get
-        if (stopSuccess b) then return True else
-                if (stopFail next)
-                        then
-                                case selectPromising blank prune stopFail backlog path of
-                                        Nothing -> return False
-                                        Just (next2, backlog2, path2) -> do
-                                                put (path2, backlog2)
-                                                searchFirst' next2 blank
-                        else
-                                let (nextBoard, bl) = pick (prune next path) in do
-                                        put (b:path, bl:backlog)
-                                        searchFirst' nextBoard blank
-                where next = nextBoards [b] blank
+selectPromising blank prune stopFail ([]:bss) [] =
+        selectPromising blank prune stopFail bss []
 
-searchFirst :: (Eq a) => Matrix a -> (a -> Bool) -> FunctionStore a -> Maybe [Matrix a]
-searchFirst b blank fs = case res of
-                        [] -> Nothing
-                        (x:xs) -> Just (x:xs)
-        where res = fst $ snd $ runReader (runStateT (searchFirst' b blank) ([],[[b]])) fs
+selectPromising blank prune stopFail ([]:bss) paths@(p:ps) =
+        selectPromising blank prune stopFail bss paths
 
+--searchFirst' :: (Eq a, Show a) =>
+--                Matrix a ->
+--                (a -> Bool) ->
+--                StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) Bool
+--searchFirst' b blank = trace (show b) $ do
+--    stopSuccess <- asks stopSuccess
+--    stopFail <- asks stopFail
+--    pick <- asks pick
+--    prune <- asks prune
+--    (path, backlog) <- get
+--    let next = prune (nextBoards [b] blank) (b:path) in
+--        if (trace (show (stopSuccess b)) $ stopSuccess b) then
+--        return True else
+--            if (stopFail next)
+--            then
+--                case selectPromising blank prune stopFail backlog path of
+--                    Nothing -> return False
+--                    Just (next2, backlog2, path2) -> do
+--                        put (path2, backlog2)
+--                        searchFirst' next2 blank
+--           else
+--                let (nextBoard, bl) = pick (prune next path) in do
+--                    put (b:path, bl:backlog)
+--                    searchFirst' nextBoard blank
+--
+--searchFirst :: (Eq a, Show a) => Matrix a -> (a -> Bool) -> FunctionStore a -> Maybe [Matrix a]
+--searchFirst b blank fs = case res of
+--                        [] -> Nothing
+--                        (x:xs) -> Just (x:xs)
+--        where res = fst $ snd $ runReader (runStateT (searchFirst' b blank) ([],[[b]])) fs
+
+search' :: (Eq a, Show a) =>
+    Matrix a ->
+    (a -> Bool) ->
+    StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) [[Matrix a]]
+
+search' b blank = do
+    stopSuccess <- asks stopSuccess
+    stopFail <- asks stopFail
+    pick <- asks pick
+    prune <- asks prune
+    (path, backlog) <- get
+    let
+        path' = b:path
+        next = prune (nextBoards [b] blank) path' in
+--        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
+        if (stopSuccess b)
+        then
+            case selectPromising blank prune stopFail backlog path' of
+                Nothing -> return [path']
+                Just (next2, backlog2, path2) -> do
+                    put (path2, backlog2)
+--                    put ((trace ("\n path2: " ++ show path2) path2), (trace ("\nbacklog2: " ++ show backlog2) backlog2))
+                    paths <- search' next2 blank
+--                    paths <- search' (trace (" \n next2: " ++ show next2) next2) blank
+                    return (path':paths)
+        else
+              if (stopFail next)
+--            if (trace ("\nnext: " ++ show next) stopFail next)
+            then
+                case selectPromising blank prune stopFail backlog path' of
+                    Nothing -> return [[]]
+                    Just (next2, backlog2, path2) -> do
+                        put (b:path2, backlog2)
+                        search' next2 blank
+            else
+                let (nextBoard, bl) = pick next in do
+                    put (path', bl:backlog)
+--                    put (path', trace ("\n bl: " ++ show bl) (bl:backlog))
+                    search' nextBoard blank
+
+search :: (Eq a, Show a) => Matrix a -> (a -> Bool) -> FunctionStore a -> [[Matrix a]]
+search b blank fs = fst $ runReader (runStateT (search' b blank) ([],[])) fs

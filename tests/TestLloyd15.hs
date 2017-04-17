@@ -38,6 +38,89 @@ manhattan_sum :: (Eq a) => Int -> Int -> Matrix a -> Matrix a -> Int
 manhattan_sum height width b1 b2 = sum $ map (manhattan height width b1) (content b2)
 
 --------------
+-- TESTCASE #0
+--------------
+boardHeight0 = 2
+boardWidth0 = 2
+cellVals0 = "ABC."
+adjacent0 = [[1,2],[0,3],
+        [0,3],[1,2]]
+board0 = generateBoard boardHeight0 boardWidth0 cellVals0
+blank0 = (=='.')
+board0' = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'A'),(1,'.'),
+        (2,'C'),(3,'B')]}
+aboard1 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'.'),(1,'A'),
+        (2,'C'),(3,'B')]}
+aboard2 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'C'),(1,'A'),
+        (2,'.'),(3,'B')]}
+aboard3 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'C'),(1,'A'),
+        (2,'B'),(3,'.')]}
+aboard4 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'C'),(1,'.'),
+        (2,'B'),(3,'A')]}
+aboard5 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'.'),(1,'C'),
+        (2,'B'),(3,'A')]}
+aboard6 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'B'),(1,'C'),
+        (2,'.'),(3,'A')]}
+aboard7 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'B'),(1,'C'),
+        (2,'A'),(3,'.')]}
+aboard8 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'B'),(1,'.'),
+        (2,'A'),(3,'C')]}
+aboard9 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'.'),(1,'B'),
+        (2,'A'),(3,'C')]}
+aboard10 = M {height = boardHeight0,
+        width = boardWidth0,
+        content = [(0,'A'),(1,'B'),
+        (2,'.'),(3,'C')]}
+
+paths0 = [[board0, board0'], [board0, aboard10, aboard9, aboard8, aboard7, aboard6, aboard5, aboard4, aboard3, aboard2, aboard1, board0']]
+stopSuccess0 = (== board0)
+stopFail0 :: [Matrix a] -> Bool
+stopFail0 = null
+
+testSearchFirst0 :: Test
+testSearchFirst0 = TestCase $ assertEqual ""
+        [board0, board0']
+        (head $ search board0' blank0
+--        (fromJust $ searchFirst board0' blank0
+        (FS {
+        stopSuccess = stopSuccess0,
+        stopFail = stopFail0,
+        pick = pickBasic,
+        prune = pruneBasic})
+        )
+
+testSearch0 :: Test
+testSearch0 = TestCase $ assertEqual ""
+        paths0
+        (search board0' blank0
+        (FS {
+        stopSuccess = stopSuccess0,
+        stopFail = stopFail0,
+        pick = pickBasic,
+        prune = pruneBasic})
+        )
+
+--------------
 -- TESTCASE #1
 --------------
 boardHeight1 = 4
@@ -102,6 +185,21 @@ xboard6 = M { height = boardHeight1,
         (4,'E'), (5,'F'), (6,'G'), (7,'D'),
         (8,'I'), (9,'J'), (10,'K'), (11,'H'),
         (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
+--xboard7 = M {height = 4,
+--        width = 4,
+--        content =
+--        [(0,'A'),(1,'B'),(2,'C'),(3,'D'),
+--        (4,'E'),(5,'F'),(6,'G'),(7,'H'),
+--        (8,'I'),(9,'J'),(10,'.'),(11,'L'),
+--        (12,'M'),(13,'N'),(14,'K'),(15,'O')]}
+--xboard8 = M {height = 4,
+--        width = 4,
+--        content =
+--        [(0,'A'),(1,'B'),(2,'C'),(3,'D'),
+--        (4,'E'),(5,'F'),(6,'G'),(7,'H'),
+--        (8,'I'),(9,'J'),(10,'K'),(11,'L'),
+--        (12,'M'),(13,'.'),(14,'N'),(15,'O')]}
+--xboard9 = [M {height = 4, width = 4, content = [(0,'A'),(1,'B'),(2,'C'),(3,'D'),(4,'E'),(5,'F'),(6,'G'),(7,'H'),(8,'I'),(9,'J'),(10,'K'),(11,'L'),(12,'M'),(13,'N'),(14,'.'),(15,'O')]
 xxboard1 = M { height = boardHeight1,
         width = boardWidth1,
         content =
@@ -118,7 +216,7 @@ nextBoards1 = [[(0,'A'), (1,'B'), (2,'C'), (3,'D'),
         (8,'I'), (9,'J'), (10,'K'), (11,'L'),
         (12,'M'), (13,'N'), (14,'.'), (15,'O')]]
 xbacklog1 = [[xboard4], [xboard5], [xboard6],[]]
-rightmost1 = [xboard3, xboard2, xboard1]
+rightmost1 = [board1, xboard3, xboard2, xboard1]
 stopSuccess1 = (== board1)
 stopFail1 :: [Matrix a] -> Bool
 stopFail1 = null
@@ -159,96 +257,110 @@ testNextBoards1 :: Test
 testNextBoards1 = TestCase $ assertEqual ""
         nextBoards1 (map content $ nextBoards [board1] blank1)
 
-testSearchFirst'1_1 :: Test
-testSearchFirst'1_1 = TestCase $ assertEqual ""
-        rightmost1 (fst $ snd $ runReader
-        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        pick = pickBasic,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'1_2 :: Test
-testSearchFirst'1_2 = TestCase $ assertEqual ""
-        True (fst $ runReader
-        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        pick = pickBasic,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'1_3 :: Test
-testSearchFirst'1_3 = TestCase $ assertEqual ""
-        xbacklog1 (snd $ snd $ runReader
-        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        pick = pickBasic,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'4_1 :: Test
-testSearchFirst'4_1 = TestCase $ assertEqual ""
-        rightmost1 (fst $ snd $ runReader
-        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        pick = xpick11,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'4_2 :: Test
-testSearchFirst'4_2 = TestCase $ assertEqual ""
-        xbacklog1 (snd $ snd $ runReader
-        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        pick = xpick11,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'5_1 :: Test
-testSearchFirst'5_1 = TestCase $ assertEqual ""
-        rightmost1 (fst $ snd $ runReader
-        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        pick = xpick12,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'5_2 :: Test
-testSearchFirst'5_2 = TestCase $ assertEqual ""
-        xbacklog1 (snd $ snd $ runReader
-        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        pick = xpick12,
-        prune = pruneBasic})
-        )
+--testSearchFirst'1_1 :: Test
+--testSearchFirst'1_1 = TestCase $ assertEqual ""
+--        rightmost1 (fst $ snd $ runReader
+--        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = pickBasic,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'1_2 :: Test
+--testSearchFirst'1_2 = TestCase $ assertEqual ""
+--        True (fst $ runReader
+--        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = pickBasic,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'1_3 :: Test
+--testSearchFirst'1_3 = TestCase $ assertEqual ""
+--        xbacklog1 (snd $ snd $ runReader
+--        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = pickBasic,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'4_1 :: Test
+--testSearchFirst'4_1 = TestCase $ assertEqual ""
+--        rightmost1 (fst $ snd $ runReader
+--        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = xpick11,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'4_2 :: Test
+--testSearchFirst'4_2 = TestCase $ assertEqual ""
+--        xbacklog1 (snd $ snd $ runReader
+--        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = xpick11,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'5_1 :: Test
+--testSearchFirst'5_1 = TestCase $ assertEqual ""
+--        rightmost1 (fst $ snd $ runReader
+--        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = xpick12,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'5_2 :: Test
+--testSearchFirst'5_2 = TestCase $ assertEqual ""
+--        xbacklog1 (snd $ snd $ runReader
+--        (runStateT (searchFirst' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = xpick12,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst1 :: Test
+--testSearchFirst1 = TestCase $ assertEqual ""
+--       rightmost1 (fromJust $ searchFirst xboard1 blank1
+--       (FS {
+--       stopSuccess = stopSuccess1,
+--       stopFail = stopFail1,
+--       pick = pickBasic,
+--       prune = pruneBasic})
+--       )
 
 testSearchFirst1 :: Test
 testSearchFirst1 = TestCase $ assertEqual ""
-       rightmost1 (fromJust $ searchFirst xboard1 blank1
-       (FS {
-       stopSuccess = stopSuccess1,
-       stopFail = stopFail1,
-       pick = pickBasic,
-       prune = pruneBasic})
-       )
+        rightmost1
+--        (fromJust $ searchFirst xboard1 blank1
+        (head $ search xboard1 blank1
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = pickBasic,
+        prune = pruneBasic})
+        )
 
 testSearchFirst4 :: Test
 testSearchFirst4 = TestCase $ assertEqual ""
-        rightmost1 (fromJust $ searchFirst xboard1 blank1
+        rightmost1
+--        (fromJust $ searchFirst xboard1 blank1
+        (head $ search xboard1 blank1
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
@@ -258,7 +370,9 @@ testSearchFirst4 = TestCase $ assertEqual ""
 
 testSearchFirst5 :: Test
 testSearchFirst5 = TestCase $ assertEqual ""
-        rightmost1 (fromJust $ searchFirst xboard1 blank1
+        rightmost1
+        (head $ search xboard1 blank1
+--        (fromJust $ searchFirst xboard1 blank1
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
@@ -268,13 +382,58 @@ testSearchFirst5 = TestCase $ assertEqual ""
 
 testSearchFirst10 :: Test
 testSearchFirst10 = TestCase $ assertEqual ""
-        [xxboard1] (fromJust $ searchFirst xxboard1 blank1
+        [board1, xxboard1]
+        (head $ search xxboard1 blank1
+--        (fromJust $ searchFirst xxboard1 blank1
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
         pick = pickBasic,
         prune = pruneBasic})
         )
+
+--testSearch'1 :: Test
+--testSearch'1 = TestCase $ assertEqual ""
+--        [xboard3, xboard4, xboard2, xboard1] (head $ drop 1 $ fst $ runReader
+--        (runStateT (search' xboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = xpick11,
+--        prune = pruneBasic})
+--        )
+--
+--testSearch'2 :: Test
+--testSearch'2 = TestCase $ assertEqual ""
+--        [xxboard1] (head $ fst $ runReader
+--        (runStateT (search' xxboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = pickBasic,
+--        prune = pruneBasic})
+--        )
+--testSearch'2 :: Test
+--testSearch'2 = TestCase $ assertEqual ""
+--        [xboard9,xboard8,xboard7] (fst $ runReader
+--        (runStateT (search' xxboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = xpick11,
+--        prune = pruneBasic})
+--        )
+--
+--testSearch'3 :: Test
+--testSearch'3 = TestCase $ assertEqual ""
+--        [] (fst $ runReader
+--        (runStateT (search' xxboard1 blank1) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess1,
+--        stopFail = stopFail1,
+--        pick = xpick11,
+--        prune = pruneBasic})
+--        )
 
 --------------
 -- TESTCASE #2
@@ -317,7 +476,7 @@ nextBoards2 = [[(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,0),
         (7,8),(8,9), (9,10), (10,11), (11,12),(12,13), (13,7)],
         [(0,1), (1,2), (2,3), (3,4),(4,5), (5,6), (6,7),
         (7,8),(8,9), (9,10), (10,11), (11,12),(12,0), (13,13)]]
-rightmost2 = [yboard4, yboard3, yboard2, yboard1]
+rightmost2 = [board2, yboard4, yboard3, yboard2, yboard1]
 stopSuccess2 = (== board2)
 stopFail2 :: [Matrix a] -> Bool
 stopFail2 = null
@@ -354,42 +513,44 @@ testNextBoards2 :: Test
 testNextBoards2 = TestCase $ assertEqual ""
         nextBoards2 (map content $ nextBoards [board2] blank2)
 
-testSearchFirst'2 :: Test
-testSearchFirst'2 = TestCase $ assertEqual ""
-        rightmost2 (fst $ snd $ runReader
-        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess2,
-        stopFail = stopFail2,
-        pick = pickBasic,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'6 :: Test
-testSearchFirst'6 = TestCase $ assertEqual ""
-        rightmost2 (fst $ snd $ runReader
-        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess2,
-        stopFail = stopFail2,
-        pick = xpick21,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'7 :: Test
-testSearchFirst'7 = TestCase $ assertEqual ""
-        rightmost2 (fst $ snd $ runReader
-        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess2,
-        stopFail = stopFail2,
-        pick = xpick22,
-        prune = pruneBasic})
-        )
+--testSearchFirst'2 :: Test
+--testSearchFirst'2 = TestCase $ assertEqual ""
+--        rightmost2 (fst $ snd $ runReader
+--        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess2,
+--        stopFail = stopFail2,
+--        pick = pickBasic,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'6 :: Test
+--testSearchFirst'6 = TestCase $ assertEqual ""
+--        rightmost2 (fst $ snd $ runReader
+--        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess2,
+--        stopFail = stopFail2,
+--        pick = xpick21,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'7 :: Test
+--testSearchFirst'7 = TestCase $ assertEqual ""
+--        rightmost2 (fst $ snd $ runReader
+--        (runStateT (searchFirst' yboard1 blank2) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess2,
+--        stopFail = stopFail2,
+--        pick = xpick22,
+--        prune = pruneBasic})
+--        )
 
 testSearchFirst2 :: Test
 testSearchFirst2 = TestCase $ assertEqual ""
-       rightmost2 (fromJust $ searchFirst yboard1 blank2
+       rightmost2
+       (head $ search yboard1 blank2
+--       (fromJust $ searchFirst yboard1 blank2
        (FS {
        stopSuccess = stopSuccess2,
        stopFail = stopFail2,
@@ -399,7 +560,9 @@ testSearchFirst2 = TestCase $ assertEqual ""
 
 testSearchFirst6 :: Test
 testSearchFirst6 = TestCase $ assertEqual ""
-       rightmost2 (fromJust $ searchFirst yboard1 blank2
+       rightmost2
+       (head $ search yboard1 blank2
+--       (fromJust $ searchFirst yboard1 blank2
        (FS {
        stopSuccess = stopSuccess2,
        stopFail = stopFail2,
@@ -409,7 +572,9 @@ testSearchFirst6 = TestCase $ assertEqual ""
 
 testSearchFirst7 :: Test
 testSearchFirst7 = TestCase $ assertEqual ""
-       rightmost2 (fromJust $ searchFirst yboard1 blank2
+       rightmost2
+       (head $ search yboard1 blank2
+--       (fromJust $ searchFirst yboard1 blank2
        (FS {
        stopSuccess = stopSuccess2,
        stopFail = stopFail2,
@@ -493,7 +658,7 @@ nextBoards3 = [[(0,"Lorem"), (1,"ipsum"), (2,"dolor"),
         (6,"adipiscing"), (7,"elit"), (8, "sed"),
         (9,"do"), (10,"eiusmod"), (11,"tempor") ,
         (12,"incididunt"), (13,""),(14,"ut")]]
-rightmost3 = [zboard5, zboard4, zboard3, zboard2, zboard1]
+rightmost3 = [board3, zboard5, zboard4, zboard3, zboard2, zboard1]
 stopSuccess3 = (== board3)
 stopFail3 :: [Matrix a] -> Bool
 stopFail3 = null
@@ -530,42 +695,44 @@ testNextBoards3 :: Test
 testNextBoards3 = TestCase $ assertEqual ""
         nextBoards3 (map content $ nextBoards [board3] blank3)
 
-testSearchFirst'3 :: Test
-testSearchFirst'3 = TestCase $ assertEqual ""
-        rightmost3 (fst $ snd $ runReader
-        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess3,
-        stopFail = stopFail3,
-        pick = pickBasic,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'8 :: Test
-testSearchFirst'8 = TestCase $ assertEqual ""
-        rightmost3 (fst $ snd $ runReader
-        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess3,
-        stopFail = stopFail3,
-        pick = xpick31,
-        prune = pruneBasic})
-        )
-
-testSearchFirst'9 :: Test
-testSearchFirst'9 = TestCase $ assertEqual ""
-        rightmost3 (fst $ snd $ runReader
-        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
-        (FS {
-        stopSuccess = stopSuccess3,
-        stopFail = stopFail3,
-        pick = xpick32,
-        prune = pruneBasic})
-        )
+--testSearchFirst'3 :: Test
+--testSearchFirst'3 = TestCase $ assertEqual ""
+--        rightmost3 (fst $ snd $ runReader
+--        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess3,
+--        stopFail = stopFail3,
+--        pick = pickBasic,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'8 :: Test
+--testSearchFirst'8 = TestCase $ assertEqual ""
+--        rightmost3 (fst $ snd $ runReader
+--        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess3,
+--        stopFail = stopFail3,
+--        pick = xpick31,
+--        prune = pruneBasic})
+--        )
+--
+--testSearchFirst'9 :: Test
+--testSearchFirst'9 = TestCase $ assertEqual ""
+--        rightmost3 (fst $ snd $ runReader
+--        (runStateT (searchFirst' zboard1 blank3) ([],[[]]))
+--        (FS {
+--        stopSuccess = stopSuccess3,
+--        stopFail = stopFail3,
+--        pick = xpick32,
+--        prune = pruneBasic})
+--        )
 
 testSearchFirst3 :: Test
 testSearchFirst3 = TestCase $ assertEqual ""
-       rightmost3 (fromJust $ searchFirst zboard1 blank3
+       rightmost3
+       (head $ search zboard1 blank3
+--       (fromJust $ searchFirst zboard1 blank3
        (FS {
        stopSuccess = stopSuccess3,
        stopFail = stopFail3,
@@ -575,7 +742,9 @@ testSearchFirst3 = TestCase $ assertEqual ""
 
 testSearchFirst8 :: Test
 testSearchFirst8 = TestCase $ assertEqual ""
-       rightmost3 (fromJust $ searchFirst zboard1 blank3
+       rightmost3
+       (head $ search zboard1 blank3
+--       (fromJust $ searchFirst zboard1 blank3
        (FS {
        stopSuccess = stopSuccess3,
        stopFail = stopFail3,
@@ -585,7 +754,9 @@ testSearchFirst8 = TestCase $ assertEqual ""
 
 testSearchFirst9 :: Test
 testSearchFirst9 = TestCase $ assertEqual ""
-       rightmost3 (fromJust $ searchFirst zboard1 blank3
+       rightmost3
+       (head $ search zboard1 blank3
+--       (fromJust $ searchFirst zboard1 blank3
        (FS {
        stopSuccess = stopSuccess3,
        stopFail = stopFail3,
@@ -614,27 +785,31 @@ main = runTestTT $ TestList [
         testNextBoards1,
         testNextBoards2,
         testNextBoards3,
-        testSearchFirst'1_1,
-        testSearchFirst'1_2,
-        testSearchFirst'1_3,
-        testSearchFirst'2,
-        testSearchFirst'3,
-        testSearchFirst'4_1,
-        testSearchFirst'4_2,
-        testSearchFirst'5_1,
-        testSearchFirst'5_2,
-        testSearchFirst'6,
-        testSearchFirst'7,
-        testSearchFirst'8,
-        testSearchFirst'9,
-        testSearchFirst1,
-        testSearchFirst2,
-        testSearchFirst3,
-        testSearchFirst4,
-        testSearchFirst5,
-        testSearchFirst6,
-        testSearchFirst7,
-        testSearchFirst8,
-        testSearchFirst9,
-        testSearchFirst10
+--        testSearchFirst'1_1,
+--        testSearchFirst'1_2,
+--        testSearchFirst'1_3,
+--        testSearchFirst'2,
+--        testSearchFirst'3,
+--        testSearchFirst'4_1,
+--        testSearchFirst'4_2,
+--        testSearchFirst'5_1,
+--        testSearchFirst'5_2,
+--        testSearchFirst'6,
+--        testSearchFirst'7,
+--        testSearchFirst'8,
+--        testSearchFirst'9,
+--        testSearchFirst0,
+--        testSearchFirst1,
+--        testSearchFirst2,
+--        testSearchFirst3,
+--        testSearchFirst4,
+--        testSearchFirst5,
+--        testSearchFirst6,
+--        testSearchFirst7,
+--        testSearchFirst8,
+--        testSearchFirst9,
+--        testSearchFirst10,
+        testSearch0
+--        testSearch'1,
+--        testSearch'2
         ]
