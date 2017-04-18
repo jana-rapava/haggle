@@ -136,43 +136,12 @@ selectPromising blank prune stopFail ([]:bss) [] =
 selectPromising blank prune stopFail ([]:bss) paths@(p:ps) =
         selectPromising blank prune stopFail bss paths
 
---searchFirst' :: (Eq a, Show a) =>
---                Matrix a ->
---                (a -> Bool) ->
---                StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) Bool
---searchFirst' b blank = trace (show b) $ do
---    stopSuccess <- asks stopSuccess
---    stopFail <- asks stopFail
---    pick <- asks pick
---    prune <- asks prune
---    (path, backlog) <- get
---    let next = prune (nextBoards [b] blank) (b:path) in
---        if (trace (show (stopSuccess b)) $ stopSuccess b) then
---        return True else
---            if (stopFail next)
---            then
---                case selectPromising blank prune stopFail backlog path of
---                    Nothing -> return False
---                    Just (next2, backlog2, path2) -> do
---                        put (path2, backlog2)
---                        searchFirst' next2 blank
---           else
---                let (nextBoard, bl) = pick (prune next path) in do
---                    put (b:path, bl:backlog)
---                    searchFirst' nextBoard blank
---
---searchFirst :: (Eq a, Show a) => Matrix a -> (a -> Bool) -> FunctionStore a -> Maybe [Matrix a]
---searchFirst b blank fs = case res of
---                        [] -> Nothing
---                        (x:xs) -> Just (x:xs)
---        where res = fst $ snd $ runReader (runStateT (searchFirst' b blank) ([],[[b]])) fs
-
-search' :: (Eq a, Show a) =>
+dfs' :: (Eq a, Show a) =>
     Matrix a ->
     (a -> Bool) ->
     StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) [[Matrix a]]
 
-search' b blank = do
+dfs' b blank = do
     stopSuccess <- asks stopSuccess
     stopFail <- asks stopFail
     pick <- asks pick
@@ -189,8 +158,8 @@ search' b blank = do
                 Just (next2, backlog2, path2) -> do
                     put (path2, backlog2)
 --                    put ((trace ("\n path2: " ++ show path2) path2), (trace ("\nbacklog2: " ++ show backlog2) backlog2))
-                    paths <- search' next2 blank
---                    paths <- search' (trace (" \n next2: " ++ show next2) next2) blank
+                    paths <- dfs' next2 blank
+--                    paths <- dfs' (trace (" \n next2: " ++ show next2) next2) blank
                     return (path':paths)
         else
               if (stopFail next)
@@ -200,12 +169,12 @@ search' b blank = do
                     Nothing -> return [[]]
                     Just (next2, backlog2, path2) -> do
                         put (b:path2, backlog2)
-                        search' next2 blank
+                        dfs' next2 blank
             else
                 let (nextBoard, bl) = pick next in do
                     put (path', bl:backlog)
 --                    put (path', trace ("\n bl: " ++ show bl) (bl:backlog))
-                    search' nextBoard blank
+                    dfs' nextBoard blank
 
-search :: (Eq a, Show a) => Matrix a -> (a -> Bool) -> FunctionStore a -> [[Matrix a]]
-search b blank fs = fst $ runReader (runStateT (search' b blank) ([],[])) fs
+dfs :: (Eq a, Show a) => Matrix a -> (a -> Bool) -> FunctionStore a -> [[Matrix a]]
+dfs b blank fs = fst $ runReader (runStateT (dfs' b blank) ([],[])) fs
