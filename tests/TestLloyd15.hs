@@ -510,7 +510,7 @@ testSearch1 = TestCase $ assertEqual ""
 testSearch3_11 :: Test
 testSearch3_11 = TestCase $ assertEqual ""
         []
-        (head $ drop 1 $ bfs xxboard1 (Fin 11)
+        (drop 1 $ bfs xxboard1 (Fin 11)
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
@@ -833,6 +833,6 @@ main = runTestTT $ TestList [
         testSearch2Fail,
         testSearch2Fail_5,
         testSearch2Fail_6,
---        testSearch3_11,
+        testSearch3_11,
         testSearch3_12
         ]
