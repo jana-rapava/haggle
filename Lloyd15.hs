@@ -109,13 +109,8 @@ applySwap board s = mkMatrix (blank board, height board, width board,
         (l1,x:l2) = splitAt pos2 b
         (l3,y:l4) = splitAt pos1 l1
 
--- we want nextBoards with typ signature Matrix a -> [Matrix a] or [Matrix a] -> [[Matrix a]]
--- generate swaps for argument
--- apply them
 nextBoards :: (Eq a) => Matrix a -> [Matrix a]
-nextBoards b = zipWith applySwap (repeat b) (generateSwaps b)
---nextBoards :: (Eq a) => [Matrix a] -> [Matrix a]
---nextBoards bs = join $ (liftM2 . liftM2) applySwap [bs] (liftM generateSwaps bs)
+nextBoards b = map (applySwap b) (generateSwaps b)
 
 data FunctionStore a =
     FS {
@@ -207,13 +202,6 @@ dfs' b = do
 dfs :: (Eq a, Show a) => Matrix a -> FunctionStore a -> [[Matrix a]]
 dfs b fs = fst $ runReader (runStateT (dfs' b) ([],[])) fs
 
--- TODO: rewrite as fold
---selectSuccess :: (Matrix a -> Bool) -> [[Matrix a]] -> [[Matrix a]]
---selectSuccess _ [] = []
---selectSuccess p (xs:xss)
---    | p (head xs) = xs : (selectSuccess p xss)
---    | otherwise = selectSuccess p xss
-
 selectNot :: [Int] -> [Matrix a] -> [Matrix a]
 selectNot is xs = [xs !! j | j <- inds \\ is]
         where inds = [0..((length xs) -1)]
@@ -246,15 +234,14 @@ bfs' last depth = do
     let
         res = findIndices stopSuccess last
         prunedLast = selectNot res last
---        prunedLast = filter (not . stopSuccess) last
 --        prunedLast = selectNot res (trace ("\n last: " ++ show last) last)
---        next = nextBoards prunedLast
---        next = map nextBoards (return prunedLast)
---        prunedNext = zipWith prune next paths in
---        TODO: maybe use a different function for pruning
 --        prunedLast = selectNot res (trace ("\n last: " ++ show (map content last)) last)
-        next = map nextBoards (trace ("\n prunedLast: " ++ show (map content prunedLast)) prunedLast)
-        prunedNext = zipWith prune (trace ("\n next: " ++ show ((map.map) content next)) next) paths in
+--        prunedLast = filter (not . stopSuccess) last
+        next = map nextBoards prunedLast
+--        next = map nextBoards (trace ("\n prunedLast: " ++ show (map content prunedLast)) prunedLast)
+        prunedNext = zipWith prune next paths in
+--        TODO: maybe use a different function for pruning
+--        prunedNext = zipWith prune (trace ("\n next: " ++ show ((map.map) content next)) next) paths in
         if (depth == 0 || null last)
         then do
                 return []
@@ -270,15 +257,11 @@ bfs' last depth = do
                     fin2 <- bfs' (concat prunedNext) (depth-1)
                     return (fin ++ fin2)
 --                return ((trace ("\n  fin: " ++ show ((map.map) content fin)) fin) ++ fin2)
-            else
---                let pathsCont = merge prunedNext (trace ("\n paths: " ++ show paths) paths) in do
-                let pathsCont = merge (trace ("\n prunedNext cont: " ++ show prunedNext) prunedNext) (trace ("\n paths: " ++ show paths) paths) in do
---                let pathsCont = merge prunedNext paths in do
-                    put pathsCont
---                    put (merge prunedNext paths)
+            else do
+                put (merge prunedNext paths)
 --                put (trace ("\n pathsCont: " ++ show ((map.map) content pathsCont)) pathsCont)
 --                    bfs' (concat (trace ("\n prunedNext cont: " ++ show ((map.map) content prunedNext)) prunedNext)) (depth-1)
-                    bfs' (concat prunedNext) (depth-1)
+                bfs' (concat prunedNext) (depth-1)
 
 bfs :: (Eq a, Show a) => Matrix a -> InfInt -> FunctionStore a -> [[Matrix a]]
 bfs b depth fs = fst $ runReader (runStateT (bfs' [b] depth) [[b]]) fs
