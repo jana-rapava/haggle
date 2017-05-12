@@ -3,7 +3,7 @@ module TestLloyd15 where
 import Test.HUnit
 import Lloyd15
 import Data.Maybe (catMaybes, fromJust)
-import Data.List (sortBy, (\\))
+import Data.List (sortBy, elemIndex, (\\))
 import Data.Function (on)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
@@ -30,7 +30,7 @@ misplaced b1 b2 = length $ filter (== False) $ zipWith (==) (content b1) (conten
 manhattan :: (Eq a) => Int -> Int -> Matrix a -> (Int, a) -> Int
 manhattan height width b (n,x) = abs (row n - row m) + abs (column n - column m)
         where
-                m = fromJust $ findIndex (==x) b
+                m = fromJust $ elemIndex x (map snd $ content b)
                 row x = x `div` width
                 column x = x `mod` height
 

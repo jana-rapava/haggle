@@ -6,7 +6,7 @@ module Lloyd15 where
 import Control.Exception (assert)
 import Control.Monad (join, liftM, liftM2)
 import Data.Maybe (catMaybes, fromJust)
-import Data.List (find, findIndices, (\\))
+import Data.List (elemIndex, (\\), partition)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
@@ -80,11 +80,8 @@ computeAdjacent boardHeight boardWidth = [grow boardHeight boardWidth seed | see
     where size = boardHeight * boardWidth
 
 
--- elemIndex blankSymbol (map snd $ content b)
-findIndex :: (a -> Bool) -> Matrix a -> Maybe Int
-findIndex p b = do
-                (pos, _) <- find (p . snd) (content b)
-                return pos
+findBlank :: (Eq a) => Matrix a -> Maybe Int
+findBlank b = elemIndex (blank b) (map snd $ content b)
 
 mkSwap :: (Int, Int) -> Swap a
 mkSwap (x,y) = S {posFrom = x,  posTo = y}
@@ -92,10 +89,9 @@ mkSwap (x,y) = S {posFrom = x,  posTo = y}
 generateSwaps :: (Eq a) => Matrix a  -> [Swap a]
 generateSwaps b = map mkSwap $ zip (repeat blankPos) swapPoss
     where
-        blankSymbol = blank b
         boardHeight = height b
         boardWidth = width b
-        blankPos = fromJust (findIndex (==blankSymbol) b)
+        blankPos = fromJust (findBlank b)
         adjacent = computeAdjacent boardHeight boardWidth
         swapPoss = adjacent !! blankPos
 
@@ -129,20 +125,6 @@ selectPromising :: (Eq a) =>
         Maybe (Matrix a, [[Matrix a]], [Matrix a])
 
 selectPromising _ _ [[]] _ = Nothing
-
--- we are in the root, going down a different branch
---selectPromising blank prune stopFail ([]:((b:bs):bss)) [] =
---    if stopFail next then
---        selectPromising blank prune stopFail (bs:bss) [] else
---        Just (b, bs:bss, [])
---    where next = prune (nextBoards [b] blank) [b]
-
--- we are in the child node, going down a different branch
---selectPromising blank prune stopFail ([]:((b:bs):bss)) path@(p:ps) =
---    if stopFail next then
---        selectPromising blank prune stopFail (bs:bss) ps else
---        Just (b, bs:bss, ps)
---    where next = prune (nextBoards [b] blank) (b:path)
 
 -- should never happen, but compiler would complain otherwise
 selectPromising _ _ ((b:bs):bss) [] = undefined
@@ -202,17 +184,6 @@ dfs' b = do
 dfs :: (Eq a, Show a) => Matrix a -> FunctionStore a -> [[Matrix a]]
 dfs b fs = fst $ runReader (runStateT (dfs' b) ([],[])) fs
 
-selectNot :: [Int] -> [Matrix a] -> [Matrix a]
-selectNot is xs = [xs !! j | j <- inds \\ is]
-        where inds = [0..((length xs) -1)]
-
-selectSuccess :: [Int] -> [[Matrix a]] -> ([[Matrix a]],[[Matrix a]])
-selectSuccess [] xss = ([], xss)
-selectSuccess (i:is) xss = ((xss !! i):fin, xss1 ++ cont)
-    where
-        (xss1, xss2) = splitAt i xss
-        (fin, cont) = selectSuccess (map (subtract (i+1)) is) (tail xss2)
-
 merge :: (Show a) => [[Matrix a]] -> [[Matrix a]] -> [[Matrix a]]
 merge [] [] = []
 --merge xss ([]:yss) = undefined
@@ -225,41 +196,34 @@ bfs' :: (Eq a, Show a) =>
         [Matrix a] ->
         InfInt ->
         StateT ([[Matrix a]]) (Reader (FunctionStore a)) [[Matrix a]]
-bfs' last depth = do
+bfs' level depth = do
     stopSuccess <- asks stopSuccess
     stopFail <- asks stopFail
     pick <- asks pick
     prune <- asks prune
     paths <- get
     let
-        res = findIndices stopSuccess last
-        prunedLast = selectNot res last
---        prunedLast = selectNot res (trace ("\n last: " ++ show last) last)
---        prunedLast = selectNot res (trace ("\n last: " ++ show (map content last)) last)
---        prunedLast = filter (not . stopSuccess) last
+        (res, prunedLast) = partition stopSuccess level
+--        (res, prunedLast) = partition stopSuccess (trace ("\n level: " ++ show level) level)
         next = map nextBoards prunedLast
 --        next = map nextBoards (trace ("\n prunedLast: " ++ show (map content prunedLast)) prunedLast)
         prunedNext = zipWith prune next paths in
---        TODO: maybe use a different function for pruning
 --        prunedNext = zipWith prune (trace ("\n next: " ++ show ((map.map) content next)) next) paths in
-        if (depth == 0 || null last)
+        if (depth == 0 || null level)
         then do
                 return []
         else
             if (not (null res))
             then
---            let (fin, pathsFin) = partition (stopSuccess . last) paths in do
-            let (fin, pathsFin) = selectSuccess res paths in do
---                let (fin, pathsFin) = selectSuccess (trace ("\n res: " ++ show res) res) (trace ("\n paths: " ++ show ((map.map) content paths)) paths) in do
-                    put (merge prunedNext pathsFin)
---                put (trace ("\n  pathsFin: " ++ show ((map.map) content pathsFin)) pathsFin)
+            let (fin, pathsFin) = partition (stopSuccess . head) paths in do
+                put (merge prunedNext pathsFin)
+--                put (merge prunedNext (trace ("\n  pathsFin: " ++ show ((map.map) content pathsFin)) pathsFin))
 --                    fin2 <- bfs' (concat (trace ("\n prunedNext fin: " ++ show ((map.map) content prunedNext)) prunedNext)) (depth-1)
-                    fin2 <- bfs' (concat prunedNext) (depth-1)
-                    return (fin ++ fin2)
+                fin2 <- bfs' (concat prunedNext) (depth-1)
+                return (fin ++ fin2)
 --                return ((trace ("\n  fin: " ++ show ((map.map) content fin)) fin) ++ fin2)
             else do
                 put (merge prunedNext paths)
---                put (trace ("\n pathsCont: " ++ show ((map.map) content pathsCont)) pathsCont)
 --                    bfs' (concat (trace ("\n prunedNext cont: " ++ show ((map.map) content prunedNext)) prunedNext)) (depth-1)
                 bfs' (concat prunedNext) (depth-1)
 
