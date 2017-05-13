@@ -209,7 +209,7 @@ bfs' level depth = do
 --        next = map nextBoards (trace ("\n prunedLast: " ++ show (map content prunedLast)) prunedLast)
         prunedNext = zipWith prune next paths in
 --        prunedNext = zipWith prune (trace ("\n next: " ++ show ((map.map) content next)) next) paths in
-        if (depth == 0 || null level)
+        if (depth == 0 || stopFail level)
         then do
                 return []
         else
