@@ -203,7 +203,8 @@ bfs' level depth = do
     prune <- asks prune
     paths <- get
     let
-        (res, prunedLast) = partition stopSuccess level
+        prunedLast = filter (not . stopSuccess) level
+--        (res, prunedLast) = partition stopSuccess level
 --        (res, prunedLast) = partition stopSuccess (trace ("\n level: " ++ show level) level)
         next = map nextBoards prunedLast
 --        next = map nextBoards (trace ("\n prunedLast: " ++ show (map content prunedLast)) prunedLast)
@@ -213,7 +214,7 @@ bfs' level depth = do
         then do
                 return []
         else
-            if (not (null res))
+            if (any stopSuccess level)
             then
             let (fin, pathsFin) = partition (stopSuccess . head) paths in do
                 put (merge prunedNext pathsFin)
