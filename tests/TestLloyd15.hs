@@ -129,7 +129,7 @@ testSearch0 = TestCase $ assertEqual ""
 
 testSearch0Fail :: Test
 testSearch0Fail = TestCase $ assertEqual ""
-        [[]]
+        []
         (dfs aaboard
         (FS {
         stopSuccess = stopSuccess0,

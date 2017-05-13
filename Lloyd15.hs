@@ -171,7 +171,7 @@ dfs' b = do
 --            if (trace ("\nnext: " ++ show next) stopFail next)
             then
                 case selectPromising prune stopFail backlog path' of
-                    Nothing -> return [[]]
+                    Nothing -> return []
                     Just (next2, backlog2, path2) -> do
                         put (b:path2, backlog2)
                         dfs' next2
