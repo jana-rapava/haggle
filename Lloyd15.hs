@@ -117,30 +117,37 @@ data FunctionStore a =
         }
 
 -- return from recursion until we find a branching, manipulate path and backlog accordingly
-selectPromising :: (Eq a) =>
+selectPromising :: (Eq a, Show a) =>
         ([Matrix a] -> [Matrix a] -> [Matrix a]) ->
+        (Matrix a -> Bool) ->
         ([Matrix a] -> Bool) ->
         [[Matrix a]] ->
         [Matrix a] ->
         Maybe (Matrix a, [[Matrix a]], [Matrix a])
 
-selectPromising _ _ [[]] _ = Nothing
+selectPromising _ _ _ [[]] _ = Nothing
 
 -- should never happen, but compiler would complain otherwise
-selectPromising _ _ ((b:bs):bss) [] = undefined
+selectPromising _ _ _ ((b:bs):bss) [] = undefined
 
 -- we are in a child node, going down the same branch
-selectPromising prune stopFail ((b:bs):bss) path@(p:ps) =
-   if stopFail next then
-        selectPromising prune stopFail (bs:bss) ps else
+selectPromising prune stopSuccess stopFail ((b:bs):bss) path@(p:ps) =
+   if stopSuccess b
+   then
         Just (b, bs:bss, ps)
+   else
+        if stopFail next
+        then
+            selectPromising prune stopSuccess stopFail (bs:bss) ps
+        else
+            Just (b, bs:bss, ps)
    where next = prune (nextBoards b) (b:path)
 
-selectPromising prune stopFail ([]:bss) [] =
-        selectPromising prune stopFail bss []
+selectPromising prune stopSuccess stopFail ([]:bss) [] =
+        selectPromising prune stopSuccess stopFail bss []
 
-selectPromising prune stopFail ([]:bss) paths@(p:ps) =
-        selectPromising prune stopFail bss paths
+selectPromising prune stopSuccess stopFail ([]:bss) paths@(p:ps) =
+        selectPromising prune stopSuccess stopFail bss ps
 
 dfs' :: (Eq a, Show a) =>
     Matrix a ->
@@ -158,7 +165,7 @@ dfs' b = do
 --        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
         if (stopSuccess b)
         then
-            case selectPromising prune stopFail backlog path' of
+            case selectPromising prune stopSuccess stopFail backlog path' of
                 Nothing -> return [path']
                 Just (next2, backlog2, path2) -> do
                     put (path2, backlog2)
@@ -170,7 +177,7 @@ dfs' b = do
               if (stopFail next)
 --            if (trace ("\nnext: " ++ show next) stopFail next)
             then
-                case selectPromising prune stopFail backlog path' of
+                case selectPromising prune stopSuccess stopFail backlog path' of
                     Nothing -> return []
                     Just (next2, backlog2, path2) -> do
                         put (b:path2, backlog2)
@@ -178,7 +185,7 @@ dfs' b = do
             else
                 let (nextBoard, bl) = pick next in do
                     put (path', bl:backlog)
---                    put (path', trace ("\n bl: " ++ show bl) (bl:backlog))
+--                    put (path', trace ("\n bl: " ++ show bl ++ "\n backlog: " ++ show (backlog)) (bl:backlog))
                     dfs' nextBoard
 
 dfs :: (Eq a, Show a) => Matrix a -> FunctionStore a -> [[Matrix a]]

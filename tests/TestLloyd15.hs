@@ -12,6 +12,9 @@ import Control.Monad.State.Lazy
 pickBasic :: [Matrix a] -> (Matrix a, [Matrix a])
 pickBasic bs = (last bs, init bs)
 
+pickBasic2 :: [Matrix a] -> (Matrix a, [Matrix a])
+pickBasic2 bs = (head bs, tail bs)
+
 -- this function prunes the branches of search space
 pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
 -- delete all items in l1 which appear in l2
@@ -100,6 +103,7 @@ aaboard = M { blank = blank0,height = boardHeight0,
         (2,'C'),(3,'.')]}
 
 paths0 = [[board0, board0'], [board0, aboard10, aboard9, aboard8, aboard7, aboard6, aboard5, aboard4, aboard3, aboard2, aboard1, board0']]
+paths0rev = [[board0, aboard10, aboard9, aboard8, aboard7, aboard6, aboard5, aboard4, aboard3, aboard2, aboard1, board0'], [board0, board0']]
 stopSuccess0 = (== board0)
 stopFail0 :: [Matrix a] -> Bool
 stopFail0 = null
@@ -124,6 +128,17 @@ testSearch0 = TestCase $ assertEqual ""
         stopSuccess = stopSuccess0,
         stopFail = stopFail0,
         pick = pickBasic,
+        prune = pruneBasic})
+        )
+
+testSearch0_2 :: Test
+testSearch0_2 = TestCase $ assertEqual ""
+        paths0rev
+        (dfs board0'
+        (FS {
+        stopSuccess = stopSuccess0,
+        stopFail = stopFail0,
+        pick = pickBasic2,
         prune = pruneBasic})
         )
 
@@ -883,6 +898,7 @@ main = runTestTT $ TestList [
         testSearchFirst17,
         testSearchFirst18,
         testSearch0,
+        testSearch0_2,
         testSearch0Fail,
         testSearch1,
         testSearch2_11,
