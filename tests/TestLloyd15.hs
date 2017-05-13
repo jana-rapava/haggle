@@ -141,7 +141,7 @@ testSearch0Fail = TestCase $ assertEqual ""
 testSearch2_11 :: Test
 testSearch2_11 = TestCase $ assertEqual ""
         [[board0, board0']]
-        (bfs board0' (Fin 11)
+        (bfs board0' 11
         (FS {
         stopSuccess = stopSuccess0,
         stopFail = stopFail0,
@@ -152,7 +152,7 @@ testSearch2_11 = TestCase $ assertEqual ""
 testSearch2_12 :: Test
 testSearch2_12 = TestCase $ assertEqual ""
         paths0
-        (bfs board0' (Fin 12)
+        (bfs board0' 12
         (FS {
         stopSuccess = stopSuccess0,
         stopFail = stopFail0,
@@ -163,7 +163,7 @@ testSearch2_12 = TestCase $ assertEqual ""
 testSearch2_13 :: Test
 testSearch2_13 = TestCase $ assertEqual ""
         paths0
-        (bfs board0' (Fin 13)
+        (bfs board0' 13
         (FS {
         stopSuccess = stopSuccess0,
         stopFail = stopFail0,
@@ -496,6 +496,50 @@ testSearchFirst14 = TestCase $ assertEqual ""
         prune = pruneBasic})
         )
 
+testSearchFirst15 :: Test
+testSearchFirst15 = TestCase $ assertEqual ""
+        rightmost1
+        (head $ bfs xboard1 Inf
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = pickBasic,
+        prune = pruneBasic})
+        )
+
+testSearchFirst16 :: Test
+testSearchFirst16 = TestCase $ assertEqual ""
+        rightmost1
+        (head $ bfs xboard1 Inf
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick11,
+        prune = pruneBasic})
+        )
+
+testSearchFirst17 :: Test
+testSearchFirst17 = TestCase $ assertEqual ""
+        rightmost1
+        (head $ bfs xboard1 Inf
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick12,
+        prune = pruneBasic})
+        )
+
+testSearchFirst18 :: Test
+testSearchFirst18 = TestCase $ assertEqual ""
+        [board1, xxboard1]
+        (head $ bfs xxboard1 Inf
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = pickBasic,
+        prune = pruneBasic})
+        )
+
 testSearch1 :: Test
 testSearch1 = TestCase $ assertEqual ""
         [board1, xboard16, xboard15, xboard14, xboard13, xboard12, xboard11, xboard10, xboard9, xboard8, xboard7,xxboard1]
@@ -510,7 +554,7 @@ testSearch1 = TestCase $ assertEqual ""
 testSearch3_11 :: Test
 testSearch3_11 = TestCase $ assertEqual ""
         []
-        (drop 1 $ bfs xxboard1 (Fin 11)
+        (drop 1 $ bfs xxboard1 11
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
@@ -521,7 +565,18 @@ testSearch3_11 = TestCase $ assertEqual ""
 testSearch3_12 :: Test
 testSearch3_12 = TestCase $ assertEqual ""
         [board1, xboard16, xboard15, xboard14, xboard13, xboard12, xboard11, xboard10, xboard9, xboard8, xboard7,xxboard1]
-        (head $ drop 1 $ bfs xxboard1 (Fin 12)
+        (head $ drop 1 $ bfs xxboard1 12
+        (FS {
+        stopSuccess = stopSuccess1,
+        stopFail = stopFail1,
+        pick = xpick12,
+        prune = pruneBasic})
+        )
+
+testSearch3 :: Test
+testSearch3 = TestCase $ assertEqual ""
+        [board1, xboard16, xboard15, xboard14, xboard13, xboard12, xboard11, xboard10, xboard9, xboard8, xboard7,xxboard1]
+        (head $ drop 1 $ bfs xxboard1 Inf
         (FS {
         stopSuccess = stopSuccess1,
         stopFail = stopFail1,
@@ -823,6 +878,10 @@ main = runTestTT $ TestList [
         testSearchFirst12,
         testSearchFirst13,
         testSearchFirst14,
+        testSearchFirst15,
+        testSearchFirst16,
+        testSearchFirst17,
+        testSearchFirst18,
         testSearch0,
         testSearch0Fail,
         testSearch1,
@@ -834,5 +893,6 @@ main = runTestTT $ TestList [
         testSearch2Fail_5,
         testSearch2Fail_6,
         testSearch3_11,
-        testSearch3_12
+        testSearch3_12,
+        testSearch3
         ]
