@@ -45,7 +45,6 @@ instance Num InfInt where
         negate (Fin x) = Fin (negate x)
         negate Inf = Inf
 
-
 mkMatrix :: (a, Int, Int, [(Int,a)]) -> Matrix a
 mkMatrix (b, h, w, d) = M {blank = b, height = h, width = w, content = d}
 
@@ -237,3 +236,68 @@ bfs' level depth = do
 
 bfs :: (Eq a, Show a) => Matrix a -> InfInt -> FunctionStore a -> [[Matrix a]]
 bfs b depth fs = fst $ runReader (runStateT (bfs' [b] depth) [[b]]) fs
+
+comb :: Int -> [a] -> [[a]]
+comb k []
+        | k == 0 = [[]]
+        | otherwise = []
+comb k (x:xs)
+        | k == 0 = [[]]
+        | otherwise = (map (x:) (comb (k-1) xs)) ++ (comb k xs)
+
+selectNodes :: (Eq a, Show a) =>
+        ([Matrix a] -> [Matrix a] -> [Matrix a]) ->
+        (Matrix a -> Bool) ->
+        ([Matrix a] -> Bool) ->
+        [[Matrix a]] ->
+        [Matrix a] ->
+        Maybe (Matrix a, [[Matrix a]], [Matrix a])
+
+selectNodes _ _ _ _ _ = Nothing
+-- LDS: iteratively restart search, where you don't call pick in 1,2,..,d points
+-- 3 urovne: iteracia cez 1,2,..,d
+-- iteracia cez mozne uzly bez heuristiky
+-- samotne prehladavanie
+-- hladaj len jedno riesenie??
+-- ako rozumne ukladat stav? co je pre nas relevantne, aby sme vedeli dobre pokracovat? dava zmysel povedat, ze lds musi byt v postupnosti prehladavani vzdy posledne?
+lds' :: (Eq a, Show a) =>
+        Matrix a ->
+        Int ->
+        StateT ([Matrix a],[[Matrix a]]) (Reader (FunctionStore a)) [[Matrix a]]
+lds' b d = do
+    stopSuccess <- asks stopSuccess
+    stopFail <- asks stopFail
+    pick <- asks pick
+    prune <- asks prune
+    (path, backlog) <- get
+    let
+        path' = b:path
+        next = prune (nextBoards b) path' in
+--        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
+        if (stopSuccess b)
+        then
+            case selectNodes prune stopSuccess stopFail backlog path' of
+                Nothing -> return [path']
+                Just (next2, backlog2, path2) -> do
+                    put (path2, backlog2)
+--                    put ((trace ("\n path2: " ++ show path2) path2), (trace ("\nbacklog2: " ++ show backlog2) backlog2))
+                    paths <- lds' next2 d
+--                    paths <- lds' (trace (" \n next2: " ++ show next2) next2) blank
+                    return (path':paths)
+        else
+              if (stopFail next)
+--            if (trace ("\nnext: " ++ show next) stopFail next)
+            then
+                case selectNodes prune stopSuccess stopFail backlog path' of
+                    Nothing -> return []
+                    Just (next2, backlog2, path2) -> do
+                        put (b:path2, backlog2)
+                        lds' next2 d
+            else
+                let (nextBoard, bl) = pick next in do
+                    put (path', bl:backlog)
+--                    put (path', trace ("\n bl: " ++ show bl) (bl:backlog))
+                    lds' nextBoard (d-1)
+
+lds :: (Eq a, Show a) => Matrix a -> Int -> FunctionStore a -> [[Matrix a]]
+lds b dis fs = concat $ [fst $ runReader (runStateT (lds' b d) ([],[])) fs | d <- [0..dis]]
