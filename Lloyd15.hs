@@ -245,15 +245,41 @@ comb k (x:xs)
         | k == 0 = [[]]
         | otherwise = (map (x:) (comb (k-1) xs)) ++ (comb k xs)
 
+-- while we have nonzero number of available discrepancies, run as DFS
+-- if we reach 0, return Nothing
 selectNodes :: (Eq a, Show a) =>
         ([Matrix a] -> [Matrix a] -> [Matrix a]) ->
         (Matrix a -> Bool) ->
         ([Matrix a] -> Bool) ->
         [[Matrix a]] ->
         [Matrix a] ->
+        Int ->
         Maybe (Matrix a, [[Matrix a]], [Matrix a])
 
-selectNodes _ _ _ _ _ = Nothing
+selectNodes _ _ _ _ _ 0 = Nothing
+
+selectNodes _ _ _ [[]] _ _ = Nothing
+
+selectNodes prune stopSuccess stopFail ((b:bs):bss) [] _ = undefined
+
+selectNodes prune stopSuccess stopFail ((b:bs):bss) path@(p:ps) d =
+   if stopSuccess b
+   then
+        Just (b, bs:bss, ps)
+   else
+        if stopFail next
+        then
+            selectNodes prune stopSuccess stopFail (bs:bss) ps (d-1)
+        else
+            Just (b, bs:bss, ps)
+   where next = prune (nextBoards b) (b:path)
+
+selectNodes prune stopSuccess stopFail ([]:bss) [] d =
+        selectNodes prune stopSuccess stopFail bss [] d
+
+selectNodes prune stopSuccess stopFail ([]:bss) path@(p:ps) d =
+        selectNodes prune stopSuccess stopFail bss ps d
+
 -- LDS: iteratively restart search, where you don't call pick in 1,2,..,d points
 -- 3 urovne: iteracia cez 1,2,..,d
 -- iteracia cez mozne uzly bez heuristiky
@@ -276,7 +302,7 @@ lds' b d = do
 --        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
         if (stopSuccess b)
         then
-            case selectNodes prune stopSuccess stopFail backlog path' of
+            case selectNodes prune stopSuccess stopFail backlog path' d of
                 Nothing -> return [path']
                 Just (next2, backlog2, path2) -> do
                     put (path2, backlog2)
@@ -288,7 +314,7 @@ lds' b d = do
               if (stopFail next)
 --            if (trace ("\nnext: " ++ show next) stopFail next)
             then
-                case selectNodes prune stopSuccess stopFail backlog path' of
+                case selectNodes prune stopSuccess stopFail backlog path' d of
                     Nothing -> return []
                     Just (next2, backlog2, path2) -> do
                         put (b:path2, backlog2)
