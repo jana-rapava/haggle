@@ -2,10 +2,13 @@
 
 import Control.Monad (liftM2)
 
+data Status = Processed | Expanded | Unvisited
+        deriving (Eq, Ord, Show, Read, Enum, Bounded)
+
 data Vertex a = V {
                 label :: a,
                 neighbours :: [a],
-                visited :: Bool } deriving (Eq, Show)
+                visited :: Status } deriving (Eq, Show)
 
 type Graph a = [Vertex a]
 
@@ -20,7 +23,7 @@ instance Monad Ziplist where
         (Ziplist xs) >>= f = head' $ map f xs
                 where head' = Ziplist . map head . map getZiplist
 
-mkVertex :: (a, [a], Bool) -> Vertex a
+mkVertex :: (a, [a], Status) -> Vertex a
 mkVertex (l, nbs, v) = V { label = l, neighbours = nbs, visited = v }
 
 generateNeighbours :: (Eq a) => [a] -> [[a]]
