@@ -7,7 +7,7 @@ data Status = Processed | Expanded | Unvisited
 
 data Vertex a = V {
                 label :: a,
-                neighbours :: [a],
+                neighbours :: [(a, Int)],
                 visited :: Status } deriving (Eq, Show)
 
 type Graph a = [Vertex a]
@@ -23,19 +23,22 @@ instance Monad Ziplist where
         (Ziplist xs) >>= f = head' $ map f xs
                 where head' = Ziplist . map head . map getZiplist
 
-mkVertex :: (a, [a], Status) -> Vertex a
+mkVertex :: (a, [(a, Int)], Status) -> Vertex a
 mkVertex (l, nbs, v) = V { label = l, neighbours = nbs, visited = v }
 
-generateNeighbours :: (Eq a) => [a] -> [[a]]
-generateNeighbours ls = getZiplist $ do
-                        f <- fmap (/=) zls
-                        xs <- (replicate' (length ls) zls)
-                        return (filter f xs)
+generateNeighbours' :: (Eq a) => [a] -> [[a]]
+generateNeighbours' ls = getZiplist $ liftM2 filter (fmap (/=) zls) (replicate' (length ls) zls)
         where
                 zls = Ziplist ls
                 replicate' n  (Ziplist xs) = Ziplist (replicate n xs)
 
-generateGraph :: (Eq a) => [a] -> Graph a
-generateGraph ls = map mkVertex $ zip3 ls (generateNeighbours ls) (repeat False)
+generateNeighbours :: (Eq a) => [a] -> [[Int]] -> [[(a, Int)]]
+generateNeighbours ls dists =  liftM2 zip nbs dists
+        where
+            nbs = generateNeighbours' ls
+
+generateGraph :: (Eq a) => [a] -> [[Int]] -> a -> Graph a
+generateGraph ls dists start = map mkVertex $ zip3 ls (generateNeighbours ls dists) (mark start ls)
+        where mark start ls = foldl (\acc x -> (if (x == start) then Expanded else Unvisited):acc) [] ls
 
 --nextNeighbours :: Graph a -> [Graph a]
