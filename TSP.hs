@@ -1,6 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 import Control.Monad (liftM2)
+import Data.Function (on)
+import Data.List (elemIndex)
+import Data.Maybe (fromJust)
 
 data Status = Processed | Expanded | Unvisited
         deriving (Eq, Ord, Show, Read, Enum, Bounded)
@@ -9,6 +12,11 @@ data Vertex a = V {
                 label :: a,
                 neighbours :: [(a, Int)],
                 visited :: Status } deriving (Eq, Show)
+
+data Move a = M {
+                posFrom :: Int,
+                posTo :: Int
+                } deriving (Eq, Show)
 
 type Graph a = [Vertex a]
 
@@ -41,4 +49,9 @@ generateGraph :: (Eq a) => [a] -> [[Int]] -> a -> Graph a
 generateGraph ls dists start = map mkVertex $ zip3 ls (generateNeighbours ls dists) (mark start ls)
         where mark start ls = foldl (\acc x -> (if (x == start) then Expanded else Unvisited):acc) [] ls
 
---nextNeighbours :: Graph a -> [Graph a]
+findExpanded :: (Eq a) => Graph a -> Maybe Int
+findExpanded g = elemIndex Expanded (map visited g)
+
+mkMove :: (Int, Int) -> Move a
+mkMove (x,y) = M {posFrom = x,  posTo = y}
+
