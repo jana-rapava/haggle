@@ -2,7 +2,7 @@
 
 import Control.Monad (liftM2)
 import Data.Function (on)
-import Data.List (elemIndex)
+import Data.List (find, elemIndex)
 import Data.Maybe (fromJust)
 
 data Status = Processed | Expanded | Unvisited
@@ -52,6 +52,25 @@ generateGraph ls dists start = map mkVertex $ zip3 ls (generateNeighbours ls dis
 findExpanded :: (Eq a) => Graph a -> Maybe Int
 findExpanded g = elemIndex Expanded (map visited g)
 
+getVertex :: (Eq a) => Graph a -> a -> (Vertex a, Int)
+getVertex g l = (v, fromJust $ elemIndex v g)
+        where v = fromJust $ find ((==l) . label) g
+
+getUnvisited :: (Eq a) => Graph a -> [a] -> [Int]
+getUnvisited g ls = map snd $ filter ((==Unvisited) . visited . fst) $ map (getVertex g) ls
+
+-- adjacent = neighbours which were not visited yet
+-- what if they were expanded in a different branch?
+computeAdjacent :: (Eq a) => Graph a -> Int -> [Int]
+computeAdjacent g i = getUnvisited g (map fst $ neighbours (g !! i))
+
 mkMove :: (Int, Int) -> Move a
 mkMove (x,y) = M {posFrom = x,  posTo = y}
+
+generateMoves :: (Eq a) => Graph a  -> [Move a]
+generateMoves g = map mkMove $ zip (repeat e) moveTo
+     where
+         -- optimization: fusion ???
+         e = fromJust (findExpanded g)
+         moveTo = computeAdjacent g e
 
