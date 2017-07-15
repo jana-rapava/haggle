@@ -1,5 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
+module TSP where
+
 import Control.Monad (liftM2)
 import Data.Function (on)
 import Data.List (find, elemIndex)
@@ -46,8 +48,8 @@ generateNeighbours ls dists =  liftM2 zip nbs dists
             nbs = generateNeighbours' ls
 
 generateGraph :: (Eq a) => [a] -> [[Int]] -> a -> Graph a
-generateGraph ls dists start = map mkVertex $ zip3 ls (generateNeighbours ls dists) (mark start ls)
-        where mark start ls = foldl (\acc x -> (if (x == start) then Expanded else Unvisited):acc) [] ls
+generateGraph ls dists start = map mkVertex $ zip3 ls (generateNeighbours ls dists) (map mark ls)
+        where mark = \x -> if (x == start) then Expanded else Unvisited
 
 findExpanded :: (Eq a) => Graph a -> Maybe Int
 findExpanded g = elemIndex Expanded (map visited g)
