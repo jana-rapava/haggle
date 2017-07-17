@@ -85,4 +85,14 @@ graph3 = generateGraph ["Lorem","ipsum","dolor","sit","amet"]
         [[],[],[],[],[]] "Lorem"
 
 main :: IO Counts
-main = runTestTT $ TestList []
+main = runTestTT $ TestList [
+        testGenerateNeighbours,
+        testGenerateGraph,
+        testFindExpanded,
+        testGetVertex,
+        testGetUnvisited,
+        testComputeAdjacent,
+        testGenerateMoves,
+        testApplyMove,
+        testNextNeighbours
+        ]
