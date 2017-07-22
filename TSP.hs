@@ -33,6 +33,9 @@ instance Monad Ziplist where
         (Ziplist xs) >>= f = head' $ map f xs
                 where head' = Ziplist . map head . map getZiplist
 
+zcons :: a -> Ziplist a -> Ziplist a
+zcons x zxs = Ziplist $ x:(getZiplist zxs)
+
 mkVertex :: (a, [(a, Int)], Status) -> Vertex a
 mkVertex (l, nbs, v) = V { label = l, neighbours = nbs, visited = v }
 
@@ -43,9 +46,10 @@ generateNeighbours' ls = getZiplist $ liftM2 filter (fmap (/=) zls) (replicate' 
                 replicate' n  (Ziplist xs) = Ziplist (replicate n xs)
 
 generateNeighbours :: (Eq a) => [a] -> [[Int]] -> [[(a, Int)]]
-generateNeighbours ls dists =  liftM2 zip nbs dists
+generateNeighbours ls dists =  getZiplist $ liftM2 zip znbs zdists
         where
-            nbs = generateNeighbours' ls
+            zdists = foldr zcons (Ziplist []) dists
+            znbs = Ziplist $ generateNeighbours' ls
 
 generateGraph :: (Eq a) => [a] -> [[Int]] -> a -> Graph a
 generateGraph ls dists start = map mkVertex $ zip3 ls (generateNeighbours ls dists) (map mark ls)
