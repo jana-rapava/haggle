@@ -5,8 +5,9 @@ module Lloyd15 where
 
 import Control.Exception (assert)
 import Control.Monad (join, liftM, liftM2)
+import Data.Function (on)
 import Data.Maybe (catMaybes, fromJust)
-import Data.List (elemIndex, (\\), partition)
+import Data.List (elemIndex, (\\), partition, sortBy)
 import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
@@ -111,7 +112,8 @@ data FunctionStore a =
     FS {
         stopSuccess :: Matrix a -> Bool,
         stopFail :: [Matrix a] -> Bool,
-        pick :: [Matrix a] -> (Matrix a, [Matrix a]),
+--        pick :: [Matrix a] -> (Matrix a, [Matrix a]),
+        rank :: Matrix a -> Int,
         prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
         }
 
@@ -148,6 +150,11 @@ selectPromising prune stopSuccess stopFail ([]:bss) [] =
 selectPromising prune stopSuccess stopFail ([]:bss) paths@(p:ps) =
         selectPromising prune stopSuccess stopFail bss ps
 
+genPick :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
+genPick rank xs = (head res, tail res)
+        where
+                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
+
 dfs' :: (Eq a, Show a) =>
     Matrix a ->
     StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) [[Matrix a]]
@@ -155,11 +162,12 @@ dfs' :: (Eq a, Show a) =>
 dfs' b = do
     stopSuccess <- asks stopSuccess
     stopFail <- asks stopFail
-    pick <- asks pick
+    rank <- asks rank
     prune <- asks prune
     (path, backlog) <- get
     let
         path' = b:path
+        pick = genPick rank
         next = prune (nextBoards b) path' in
 --        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
         if (stopSuccess b)
@@ -190,6 +198,60 @@ dfs' b = do
 dfs :: (Eq a, Show a) => Matrix a -> FunctionStore a -> [[Matrix a]]
 dfs b fs = fst $ runReader (runStateT (dfs' b) ([],[])) fs
 
+type Path a = ([Matrix a], Int)
+
+newtype SortedList a = SortedList {getSortedList :: [a]} deriving (Functor, Show, Eq)
+
+split :: [Path a] -> Maybe (Path a, [Path a])
+split = undefined
+
+pickAndMerge :: (Matrix a -> Int) -> [Matrix a] -> [Path a] -> [Path a]
+pickAndMerge = undefined
+
+addTo :: [Path a] -> [Path a] -> [Path a]
+addTo = undefined
+
+befs' :: (Eq a, Show a) =>
+        Path a ->
+        StateT (SortedList (Path a)) (Reader (FunctionStore a)) [[Matrix a]]
+befs' path = do
+        stopSuccess <- asks stopSuccess
+        stopFail <- asks stopFail
+        rank <- asks rank
+        prune <- asks prune
+        backlog' <- get
+        let
+            b = (head . fst) path
+            backlog = getSortedList backlog'
+            next = prune (nextBoards b) (fst path) in
+--          next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
+            if (stopSuccess b)
+            then
+                case split backlog of
+                Nothing -> return [fst path]
+                Just (path2, backlog2) -> do
+                    put (SortedList backlog2)
+--                  put ((trace ("\n path2: " ++ show path2) path2), (trace ("\nbacklog2: " ++ show backlog2) backlog2))
+                    paths <- befs' path2
+--                    paths <- dfs' (trace (" \n next2: " ++ show next2) next2) blank
+                    return ((fst path):paths)
+            else
+                if (stopFail next)
+--              if (trace ("\nnext: " ++ show next) stopFail next)
+                then
+                    case split backlog of
+                    Nothing -> return []
+                    Just (path2, backlog2) -> do
+                        put (SortedList backlog2)
+                        befs' path2
+                else
+                    let paths2 = pickAndMerge rank next backlog
+                        backlog2 = addTo backlog paths2 in do
+--                    put (path', trace ("\n bl: " ++ show bl ++ "\n backlog: " ++ show (backlog)) (bl:backlog))
+                        put (SortedList $ tail backlog2)
+                        befs' (head backlog2)
+
+
 merge :: (Show a) => [[Matrix a]] -> [[Matrix a]] -> [[Matrix a]]
 merge [] [] = []
 --merge xss ([]:yss) = undefined
@@ -205,7 +267,7 @@ bfs' :: (Eq a, Show a) =>
 bfs' level depth = do
     stopSuccess <- asks stopSuccess
     stopFail <- asks stopFail
-    pick <- asks pick
+    rank <- asks rank
     prune <- asks prune
     paths <- get
     let
@@ -293,11 +355,12 @@ lds' :: (Eq a, Show a) =>
 lds' b d = do
     stopSuccess <- asks stopSuccess
     stopFail <- asks stopFail
-    pick <- asks pick
+    rank <- asks rank
     prune <- asks prune
     (path, backlog) <- get
     let
         path' = b:path
+        pick = genPick rank
         next = prune (nextBoards b) path' in
 --        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
         if (stopSuccess b)

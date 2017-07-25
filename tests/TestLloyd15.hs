@@ -20,11 +20,6 @@ pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
 -- delete all items in l1 which appear in l2
 pruneBasic = (\\)
 
-genPick :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
-genPick rank xs = (head res, tail res)
-        where
-                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
-
 -- heuristics 1: pick the board with lowest number of misplaced tiles
 misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
 misplaced b1 b2 = length $ filter (== False) $ zipWith (==) (content b1) (content b2)

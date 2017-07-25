@@ -3,6 +3,8 @@
 # LLOYD15
 #
 #################
+nextstep0.1:BeFS - come back and expand completely different node if it's better than any child of current node
+nextstep0.12 - test BeFS
 nextstep0.2: implemtuj backtracking pre LDS - diskrepancie sa posuvaju zdola nahor - posledny uzol na ceste je diskrepancny
  -urob list comprehension nad vsetkymi uzlami na ceste, na kazdu prislusnu podcestu z korena sa zavolaj rekurzivne - bud zachovam pocet moznych diskrepancii a pokracujem optimalnym synom, alebo ho znizim o 1 a pokracujem bez heuristiky
 nextstep0.3: implementuj DFS do danej hlbky
@@ -23,7 +25,6 @@ nextstep0.6: daj selectPromising do monadoveho kontextu
 nextstep3: make the algorithms consistent with each other
  nextstep4: pridaj do FunctionStore akcie, ktore sa maju vykonat pri stopFail a stopSuccess
  nextstep5: pridaj do FunctionStore aux hashmapu pre paramtre rozlicnych algoritmov
- nextstep6: start working on TSP
  nextstep7: do some profiling
  first way to make it consistent:
  DFS: stopSuccess -> return solution(s) ++ backtrack no matter the depth
@@ -66,4 +67,4 @@ c2 f g1 g2 x = f (g x) (h x)
 # TSP
 #
 ################
-nextstep 0.4 - testy na zakladne funkcie
+nextstep: po oprave DFS/BeFS implementuj tuto funkciu pre TSP
