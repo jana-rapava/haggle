@@ -155,6 +155,11 @@ genPick rank xs = (head res, tail res)
         where
                 res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
 
+genPickReverse :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
+genPickReverse rank xs = (last res, init res)
+        where
+                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
+
 dfs' :: (Eq a, Show a) =>
     Matrix a ->
     StateT ([Matrix a], [[Matrix a]]) (Reader (FunctionStore a)) [[Matrix a]]
@@ -167,7 +172,7 @@ dfs' b = do
     (path, backlog) <- get
     let
         path' = b:path
-        pick = genPick rank
+        pick = genPickReverse rank
         next = prune (nextBoards b) path' in
 --        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
         if (stopSuccess b)
