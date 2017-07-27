@@ -3,6 +3,7 @@
 # LLOYD15
 #
 #################
+nextstep0.01: fix failing DFS tests - pickBasic needs genPickReverse, while heuristics need genPick - what do I do with that without using State monad? pass to rank (Matrix a, Int), where Int is some "default" ranking?
 nextstep0.1:BeFS - come back and expand completely different node if it's better than any child of current node
 nextstep0.12 - test BeFS
 nextstep0.2: implemtuj backtracking pre LDS - diskrepancie sa posuvaju zdola nahor - posledny uzol na ceste je diskrepancny

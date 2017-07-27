@@ -208,13 +208,16 @@ type Path a = ([Matrix a], Int)
 newtype SortedList a = SortedList {getSortedList :: [a]} deriving (Functor, Show, Eq)
 
 split :: [Path a] -> Maybe (Path a, [Path a])
-split = undefined
+split [] = Nothing
+split (p:ps) = Just (p, ps)
 
 pickAndMerge :: (Matrix a -> Int) -> [Matrix a] -> [Path a] -> [Path a]
-pickAndMerge = undefined
+pickAndMerge rank bs backlog = undefined
+        where (h, t) = genPick rank bs
 
 addTo :: [Path a] -> [Path a] -> [Path a]
-addTo = undefined
+addTo backlog ps = undefined
+        where sps = sortBy (compare `on` snd) ps
 
 befs' :: (Eq a, Show a) =>
         Path a ->
