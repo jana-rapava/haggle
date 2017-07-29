@@ -9,8 +9,8 @@ import Control.Monad.Reader
 import Control.Monad.State.Lazy
 
 -- this function determines the search order - change this to implement different heuristics
-rankBasic :: Matrix a -> Int
-rankBasic _ = 1
+rankBasic :: Matrix a -> Int -> Int
+rankBasic _ i = i
 
 -- this function prunes the branches of search space
 pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
@@ -379,8 +379,8 @@ stopSuccess1 = (== board1)
 stopFail1 :: [Matrix a] -> Bool
 stopFail1 = null
 
-xrank11 = misplaced board1
-xrank12 = manhattan_sum boardHeight1 boardWidth1 board1
+xrank11 b _ = misplaced board1 b
+xrank12 b _ = manhattan_sum boardHeight1 boardWidth1 board1 b
 
 testGenerateBoard1 :: Test
 testGenerateBoard1 = TestCase $ assertEqual ""
@@ -634,8 +634,8 @@ stopSuccess2 = (== board2)
 stopFail2 :: [Matrix a] -> Bool
 stopFail2 = null
 
-xrank21 = misplaced board2
-xrank22 = manhattan_sum boardHeight2 boardWidth2 board2
+xrank21 b _ = misplaced board2 b
+xrank22 b _ = manhattan_sum boardHeight2 boardWidth2 board2 b
 
 testGenerateBoard3 :: Test
 testGenerateBoard3 = TestCase $ assertEqual ""
@@ -778,8 +778,8 @@ stopSuccess3 = (== board3)
 stopFail3 :: [Matrix a] -> Bool
 stopFail3 = null
 
-xrank31 = misplaced board3
-xrank32 = manhattan_sum boardHeight3 boardWidth3 board3
+xrank31 b _ = misplaced board3 b
+xrank32 b _ = manhattan_sum boardHeight3 boardWidth3 board3 b
 
 testGenerateBoard5 :: Test
 testGenerateBoard5 = TestCase $ assertEqual ""

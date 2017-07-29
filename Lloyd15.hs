@@ -113,7 +113,7 @@ data FunctionStore a =
         stopSuccess :: Matrix a -> Bool,
         stopFail :: [Matrix a] -> Bool,
 --        pick :: [Matrix a] -> (Matrix a, [Matrix a]),
-        rank :: Matrix a -> Int,
+        rank :: Matrix a -> Int -> Int,
         prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
         }
 
@@ -150,15 +150,17 @@ selectPromising prune stopSuccess stopFail ([]:bss) [] =
 selectPromising prune stopSuccess stopFail ([]:bss) paths@(p:ps) =
         selectPromising prune stopSuccess stopFail bss ps
 
-genPick :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
+genPick :: (Matrix a -> Int -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
 genPick rank xs = (head res, tail res)
         where
-                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
+                l = length xs
+                ns = [l..1]
+                res = map snd $ sortBy (compare `on` fst) $ zip (liftM2 rank xs ns) xs
 
-genPickReverse :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
-genPickReverse rank xs = (last res, init res)
-        where
-                res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
+-- genPickReverse :: (Matrix a -> Int) -> [Matrix a] -> (Matrix a, [Matrix a])
+-- genPickReverse rank xs = (last res, init res)
+--         where
+--                 res = map snd $ sortBy (compare `on` fst) $ zip (map rank xs) xs
 
 dfs' :: (Eq a, Show a) =>
     Matrix a ->
@@ -172,7 +174,7 @@ dfs' b = do
     (path, backlog) <- get
     let
         path' = b:path
-        pick = genPickReverse rank
+        pick = genPick rank
         next = prune (nextBoards b) path' in
 --        next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
         if (stopSuccess b)
@@ -211,7 +213,7 @@ split :: [Path a] -> Maybe (Path a, [Path a])
 split [] = Nothing
 split (p:ps) = Just (p, ps)
 
-pickAndMerge :: (Matrix a -> Int) -> [Matrix a] -> [Path a] -> [Path a]
+pickAndMerge :: (Matrix a -> Int -> Int) -> [Matrix a] -> [Path a] -> [Path a]
 pickAndMerge rank bs backlog = undefined
         where (h, t) = genPick rank bs
 
