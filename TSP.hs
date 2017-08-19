@@ -6,6 +6,7 @@ import Control.Monad (liftM2)
 import Data.Function (on)
 import Data.List (find, elemIndex)
 import Data.Maybe (fromJust)
+import Ziplist
 
 data Status = Processed | Expanded | Unvisited
         deriving (Eq, Ord, Show, Read, Enum, Bounded)
@@ -22,28 +23,12 @@ data Move a = M {
 
 type Graph a = [Vertex a]
 
-newtype Ziplist a = Ziplist {getZiplist :: [a]} deriving (Functor, Show, Eq)
-
-instance Applicative Ziplist where
-        pure x = Ziplist $ [x]
-        Ziplist fs <*> Ziplist xs = Ziplist $ zipWith ($) fs xs
-
--- TODO: verify laws
-instance Monad Ziplist where
-        (Ziplist xs) >>= f = head' $ map f xs
-                where head' = Ziplist . map head . map getZiplist
-
-zcons :: a -> Ziplist a -> Ziplist a
-zcons x zxs = Ziplist $ x:(getZiplist zxs)
 
 mkVertex :: (a, [(a, Int)], Status) -> Vertex a
 mkVertex (l, nbs, v) = V { label = l, neighbours = nbs, visited = v }
 
 generateNeighbours' :: (Eq a) => [a] -> [[a]]
-generateNeighbours' ls = getZiplist $ liftM2 filter (fmap (/=) zls) (replicate' (length ls) zls)
-        where
-                zls = Ziplist ls
-                replicate' n  (Ziplist xs) = Ziplist (replicate n xs)
+generateNeighbours' ls = map (\(p,s) -> init p ++ s) [splitAt l ls | l <- [1..(length ls)]]
 
 generateNeighbours :: (Eq a) => [a] -> [[Int]] -> [[(a, Int)]]
 generateNeighbours ls dists =  getZiplist $ liftM2 zip znbs zdists
