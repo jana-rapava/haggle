@@ -18,7 +18,14 @@ data Matrix a = M {
                 height :: Int,
                 width :: Int,
                 content :: [(Int, a)]
-                } deriving (Eq, Show)
+                } deriving (Eq)
+show' [] = ""
+show' (a:b:c:d:ms) = show (map snd (a:b:c:[d])) ++  "\n" ++ show' ms
+show' x = show x
+-- just for testing - incompatible with Read
+instance Show a => Show (Matrix a) where
+        show m = show' (content m)
+
 data Swap a = S {
                 posFrom :: Int,
                 posTo :: Int
