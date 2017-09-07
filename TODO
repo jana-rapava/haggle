@@ -3,9 +3,15 @@
 # LLOYD15
 #
 #################
-nextstep0.01: fix failing DFS tests
-nextstep0.1:BeFS - come back and expand completely different node if it's better than any child of current node
-nextstep0.12 - test BeFS
+nextstep0.1 - create modules
+nextstep0.11 - make each module compile
+nextstep0.12 - split tests into modules
+nextstep0.13 - make each test module compile
+nextstep0.2 - test BeFS helper functions
+nextstep0.25 - test BeFS
+nextstep1.0 - figure out how to implement rankBasic2
+neststep0.16 - rewrite DFS with BeFS
+nextstep0.17 - implement iterative deepening
 nextstep0.2: implemtuj backtracking pre LDS - diskrepancie sa posuvaju zdola nahor - posledny uzol na ceste je diskrepancny
  -urob list comprehension nad vsetkymi uzlami na ceste, na kazdu prislusnu podcestu z korena sa zavolaj rekurzivne - bud zachovam pocet moznych diskrepancii a pokracujem optimalnym synom, alebo ho znizim o 1 a pokracujem bez heuristiky
 nextstep0.3: implementuj DFS do danej hlbky
