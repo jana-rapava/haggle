@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Lloyd15 (Matrix(M), Swap(S), InfInt(Fin,Inf), generateBoard, generateSwaps, applySwap, nextBoards)   where
+module Lloyd15 (Matrix(..), Swap(..), generateBoard, generateSwaps, applySwap, nextBoards, computeAdjacent)   where
 
 import Control.Exception (assert)
 import Data.Maybe (catMaybes, fromJust)
@@ -9,6 +9,7 @@ import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
 import Debug.Trace
+
 
 data Matrix a = M {
                 blank :: a,
@@ -29,27 +30,6 @@ data Swap a = S {
                 posTo :: Int
                 } deriving (Eq, Show)
 
-data InfInt = Fin Integer | Inf deriving (Eq, Show)
-
-instance Num InfInt where
-        (Fin x) + (Fin y) = Fin (x + y)
-        Inf + _ = Inf
-        _ + Inf = Inf
-
-        (Fin x) * (Fin y) = Fin (x * y)
-        Inf * _ = Inf
-        _ * Inf = Inf
-
-        abs (Fin x) = Fin (abs x)
-        abs Inf = Inf
-
-        signum (Fin x) = Fin (signum x)
-        signum Inf = 1
-
-        fromInteger x = Fin x
-
-        negate (Fin x) = Fin (negate x)
-        negate Inf = Inf
 
 mkMatrix :: (a, Int, Int, [(Int,a)]) -> Matrix a
 mkMatrix (b, h, w, d) = M {blank = b, height = h, width = w, content = d}

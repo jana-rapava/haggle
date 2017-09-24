@@ -1,6 +1,7 @@
 module BFS where
 
 import Lloyd15
+import InfInt
 import FunctionStore
 import Data.List (partition)
 import Control.Monad.Reader

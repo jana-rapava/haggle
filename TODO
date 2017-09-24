@@ -3,23 +3,24 @@
 # LLOYD15
 #
 #################
-nextstep0.1 - create modules
-nextstep0.11 - make each module compile
-nextstep0.12 - split tests into modules
-nextstep0.13 - make each test module compile
-nextstep0.2 - test BeFS helper functions
-nextstep0.25 - test BeFS
+nextstep0.21 - BeFS: delete fully expanded paths from backlog
+        - mame ich detekovat v momente, ked sa ocitnu v backlogu, alebo az v momente, ked ich skusame rozexpandovat?
+        - co sa stane, ked skusime expandovat plne expandovanu cestu?
+nextstep0.25 - fix failing BeFS tests (related to 0.21?)
 nextstep1.0 - figure out how to implement rankBasic2
 neststep0.16 - rewrite DFS with BeFS
 nextstep0.17 - implement iterative deepening
 nextstep0.2: implemtuj backtracking pre LDS - diskrepancie sa posuvaju zdola nahor - posledny uzol na ceste je diskrepancny
  -urob list comprehension nad vsetkymi uzlami na ceste, na kazdu prislusnu podcestu z korena sa zavolaj rekurzivne - bud zachovam pocet moznych diskrepancii a pokracujem optimalnym synom, alebo ho znizim o 1 a pokracujem bez heuristiky
+nextstep0.25: ako sa aplikuje nextBoards na backlog? sprava sa to ako monada/applicative?
 nextstep0.3: implementuj DFS do danej hlbky
 nextstep0.4: daj do stopFail 2 intovy argument (hlbku)
 nextstep0.5: presun level v BFS do State monady
 nextstep0.6: daj selectPromising do monadoveho kontextu
  nextstep1.1: presun pick do auxu pre DFS/BeFs
  nextstep1.2: nase DFS je vlastne BeFS - urob prislusne upravy
+ nextstep1.3: prejst sigfpeho clanky a vziat si z nich, co mozem
+ nextstep1.4: ukladat backlog do leftist haldy module heaps)
  nextstep2: implement search algorithms
  BFS
  best-first search (should we be able to come back and expand completely different node if it's better than any child of current node? how for goodness sake am I supposed to implement that? asi ukladat uzly aj s hodnotou heuristiky a pamatat si najlepsiu heuristiku v backlogu - prvy uzol s touto hodnotu, ktory najdem, expandujem)
