@@ -27,12 +27,12 @@ pickAndMerge rank bs (path,r) = zip (zipWith (:) (map fst sbs) (repeat path)) (m
             rbs = zip bs (zipWith rank bs ns)
             sbs = sortBy (compare `on` snd) rbs
 
-insert :: Path a -> [Path a] -> [Path a]
-insert (p,r) [] = [(p,r)]
-insert (p1,r1) ((p2,r2):ps) = if (r1 > r2) then (p2,r2):(insert (p1,r1) ps) else (p1,r1):(p2,r2):ps
+insert :: Path a -> SortedList (Path a) -> SortedList (Path a)
+insert (p,r) (SortedList []) = SortedList [(p,r)]
+insert (p1,r1) (SortedList ((p2,r2):ps)) = if (r1 > r2) then SortedList ((p2,r2): (getSortedList (insert (p1,r1) (SortedList ps)))) else SortedList ((p1,r1):(p2,r2):ps)
 
 -- sort new paths into backlog
-addTo :: [Path a] -> [Path a] -> [Path a]
+addTo :: SortedList (Path a) -> [Path a] -> SortedList (Path a)
 addTo backlog ps = foldr insert backlog ps
 
 befs' :: (Eq a, Show a) =>
@@ -70,7 +70,7 @@ befs' path = do
                         befs' path2
                 else
                     let paths2 = pickAndMerge rank next path
-                        backlog2 = addTo backlog paths2 in do
+                        backlog2 = getSortedList $ addTo backlog' paths2 in do
 --                    put (path', trace ("\n bl: " ++ show bl ++ "\n backlog: " ++ show (backlog)) (bl:backlog))
                         put (SortedList $ tail backlog2)
                         befs' (head backlog2)

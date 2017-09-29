@@ -6,7 +6,6 @@
 nextstep0.21 - BeFS: delete fully expanded paths from backlog
         - mame ich detekovat v momente, ked sa ocitnu v backlogu, alebo az v momente, ked ich skusame rozexpandovat?
         - co sa stane, ked skusime expandovat plne expandovanu cestu?
-nextstep0.25 - fix failing BeFS tests (related to 0.21?)
 nextstep1.0 - figure out how to implement rankBasic2
 neststep0.16 - rewrite DFS with BeFS
 nextstep0.17 - implement iterative deepening
@@ -21,6 +20,7 @@ nextstep0.6: daj selectPromising do monadoveho kontextu
  nextstep1.2: nase DFS je vlastne BeFS - urob prislusne upravy
  nextstep1.3: prejst sigfpeho clanky a vziat si z nich, co mozem
  nextstep1.4: ukladat backlog do leftist haldy module heaps)
+ nextstep1.5: implement typeclass Searchable which implements FunctionStore functions
  nextstep2: implement search algorithms
  BFS
  best-first search (should we be able to come back and expand completely different node if it's better than any child of current node? how for goodness sake am I supposed to implement that? asi ukladat uzly aj s hodnotou heuristiky a pamatat si najlepsiu heuristiku v backlogu - prvy uzol s touto hodnotu, ktory najdem, expandujem)

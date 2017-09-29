@@ -3,6 +3,7 @@ module TestFixtures where
 import Lloyd15
 import Data.List ((\\), elemIndex)
 import Data.Maybe (fromJust)
+import BeFS (SortedList(..))
 
 -- this function determines the search order - change this to implement different heuristics
 rankBasic :: Matrix a -> Int -> Int
@@ -249,12 +250,15 @@ paths1 :: [([Matrix Char], Int)]
 paths1 = [([board1', board1],1), ([xxboard1, board1],2)]
 paths2 :: [([Matrix Char], Int)]
 paths2 = [([board1', board1],2), ([xxboard1, board1],2)]
-paths3 :: [([Matrix Char], Int)]
-paths3 = [([xboard14, board1], 8), ([xboard12, board1', board1], 5), ([xboard15,board1',board1], 6), ([xboard13, board1],3)]
+paths3 :: SortedList ([Matrix Char], Int)
+paths3 = SortedList [([xboard13, board1],3), ([xboard12, board1', board1], 5), ([xboard15,board1',board1], 6), ([xboard14, board1], 8) ]
+--paths3 = SortedList [([xboard12, board1', board1], 5)]
 paths4 :: [([Matrix Char], Int)]
+--paths4 = [([xboard14, board1], 8), ([xboard13, board1],3)]
 paths4 = [([board1', board1],5), ([xxboard1, board1],7)]
-paths5 :: [([Matrix Char], Int)]
-paths5 = [([xboard13, board1],3),([xboard12, board1', board1], 5),([board1', board1],5),([xboard15,board1',board1], 6),([xxboard1, board1],7),([xboard14, board1], 8)]
+paths5 :: SortedList ([Matrix Char], Int)
+--paths5 = SortedList [([xboard13, board1],3), ([xboard12, board1', board1], 5), ([xboard14, board1], 8)]
+paths5 = SortedList [([xboard13, board1],3),([board1', board1],5),([xboard12, board1', board1], 5),([xboard15,board1',board1], 6),([xxboard1, board1],7),([xboard14, board1], 8)]
 xbacklog1 = [[xboard4], [xboard5], [xboard6],[]]
 rightmost1 = [board1, xboard3, xboard2, xboard1]
 stopSuccess1 = (== board1)
