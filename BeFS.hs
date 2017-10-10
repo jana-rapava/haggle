@@ -10,7 +10,7 @@ import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
 import Debug.Trace
 
-type Path a = ([Matrix a], Int)
+type Path a = ([Matrix a], Integer)
 
 newtype SortedList a = SortedList {getSortedList :: [a]} deriving (Functor, Show, Eq)
 
@@ -19,11 +19,11 @@ split [] = Nothing
 split (p:ps) = Just (p, ps)
 
 -- prolong path by all the possible next state, rank new paths
-pickAndMerge :: Show a => (Matrix a -> Int -> Int) -> [Matrix a] -> Path a -> [Path a]
+pickAndMerge :: Show a => (Matrix a -> Integer -> Integer) -> [Matrix a] -> Path a -> [Path a]
 pickAndMerge rank bs (path,r) = zip (zipWith (:) (map fst sbs) (repeat path)) (map snd sbs)
         where
             l = length bs
-            ns = [1..l]
+            ns = replicate l (r-1)
             rbs = zip bs (zipWith rank bs ns)
             sbs = sortBy (compare `on` snd) rbs
 
@@ -76,5 +76,5 @@ befs' path = do
                         befs' (head backlog2)
 
 befs :: (Eq a, Show a) => Matrix a -> FunctionStore a -> [[Matrix a]]
-befs b fs = fst $ runReader (runStateT (befs' b_path) (SortedList [([],0)])) fs
-        where b_path = ([b],0)
+befs b fs = fst $ runReader (runStateT (befs' b_path) (SortedList [])) fs
+        where b_path = ([b], trace ("estim = " ++ show (estim b)) (estim b))

@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Lloyd15 (Matrix(..), Swap(..), generateBoard, generateSwaps, applySwap, nextBoards, computeAdjacent)   where
+module Lloyd15 (Matrix(..), Swap(..), generateBoard, generateSwaps, applySwap, nextBoards, computeAdjacent, estim)   where
 
 import Control.Exception (assert)
 import Data.Maybe (catMaybes, fromJust)
@@ -64,6 +64,9 @@ computeAdjacent :: Int -> Int -> [[Int]]
 computeAdjacent boardHeight boardWidth = [grow boardHeight boardWidth seed | seed <- [0..size-1]]
     where size = boardHeight * boardWidth
 
+estim :: Matrix a -> Integer
+estim b = product [1..n]
+        where n = fromIntegral $ (height b) * (width b)
 
 findBlank :: (Eq a) => Matrix a -> Maybe Int
 findBlank b = elemIndex (blank b) (map snd $ content b)

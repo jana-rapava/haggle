@@ -6,7 +6,7 @@ import Data.Maybe (fromJust)
 import BeFS (SortedList(..))
 
 -- this function determines the search order - change this to implement different heuristics
-rankBasic :: Matrix a -> Int -> Int
+rankBasic :: Matrix a -> Integer -> Integer
 rankBasic _ i = i
 
 -- this function prunes the branches of search space
@@ -15,8 +15,8 @@ pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
 pruneBasic = (\\)
 
 -- heuristics 1: rank the board with lowest number of misplaced tiles
-misplaced :: (Eq a) => Matrix a -> Matrix a -> Int
-misplaced b1 b2 = length $ filter (== False) $ zipWith (==) (content b1) (content b2)
+misplaced :: (Eq a) => Matrix a -> Matrix a -> Integer
+misplaced b1 b2 = fromIntegral $ length $ filter (== False) $ zipWith (==) (content b1) (content b2)
 
 -- heuristics 2: rank the board with lowest sum of Manhattan distances from the goal configuration
 manhattan :: (Eq a) => Int -> Int -> Matrix a -> (Int, a) -> Int
@@ -26,8 +26,8 @@ manhattan height width b (n,x) = abs (row n - row m) + abs (column n - column m)
                 row x = x `div` width
                 column x = x `mod` height
 
-manhattan_sum :: (Eq a) => Int -> Int -> Matrix a -> Matrix a -> Int
-manhattan_sum height width b1 b2 = sum $ map (manhattan height width b1) (content b2)
+manhattan_sum :: (Eq a) => Int -> Int -> Matrix a -> Matrix a -> Integer
+manhattan_sum height width b1 b2 = fromIntegral $ sum $ map (manhattan height width b1) (content b2)
 
 --------------
 -- TESTCASE #0
@@ -244,19 +244,19 @@ xxboard1 = M {  blank = blank1,height = boardHeight1,
         (8,'I'), (9,'J'), (10,'K'), (11,'L'),
         (12,'M'), (13, 'N'), (14,'.'), (15,'O')]}
 nextBoards1 = [board1', xxboard1]
-path1 :: ([Matrix Char], Int)
+path1 :: ([Matrix Char], Integer)
 path1 = ([board1], 1)
-paths1 :: [([Matrix Char], Int)]
-paths1 = [([board1', board1],1), ([xxboard1, board1],2)]
-paths2 :: [([Matrix Char], Int)]
+paths1 :: [([Matrix Char], Integer)]
+paths1 = [([board1', board1],0), ([xxboard1, board1],0)]
+paths2 :: [([Matrix Char], Integer)]
 paths2 = [([board1', board1],2), ([xxboard1, board1],2)]
-paths3 :: SortedList ([Matrix Char], Int)
+paths3 :: SortedList ([Matrix Char], Integer)
 paths3 = SortedList [([xboard13, board1],3), ([xboard12, board1', board1], 5), ([xboard15,board1',board1], 6), ([xboard14, board1], 8) ]
 --paths3 = SortedList [([xboard12, board1', board1], 5)]
-paths4 :: [([Matrix Char], Int)]
+paths4 :: [([Matrix Char], Integer)]
 --paths4 = [([xboard14, board1], 8), ([xboard13, board1],3)]
 paths4 = [([board1', board1],5), ([xxboard1, board1],7)]
-paths5 :: SortedList ([Matrix Char], Int)
+paths5 :: SortedList ([Matrix Char], Integer)
 --paths5 = SortedList [([xboard13, board1],3), ([xboard12, board1', board1], 5), ([xboard14, board1], 8)]
 paths5 = SortedList [([xboard13, board1],3),([board1', board1],5),([xboard12, board1', board1], 5),([xboard15,board1',board1], 6),([xxboard1, board1],7),([xboard14, board1], 8)]
 xbacklog1 = [[xboard4], [xboard5], [xboard6],[]]

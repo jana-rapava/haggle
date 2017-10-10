@@ -7,6 +7,6 @@ data FunctionStore a =
         stopSuccess :: Matrix a -> Bool,
         stopFail :: [Matrix a] -> Bool,
 --        pick :: [Matrix a] -> (Matrix a, [Matrix a]),
-        rank :: Matrix a -> Int -> Int,
+        rank :: Matrix a -> Integer -> Integer,
         prune :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
         }
