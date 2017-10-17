@@ -3,10 +3,8 @@
 # LLOYD15
 #
 #################
-nextstep0.05 - BeFS: issue with rankBasic - how we are supposed the proceed if every reasonable heuristics takes a path with lowest heuristics, while any magical numbers we are able to provide must be increasing? (we can make an estimate of 15!, but that won't fit into an Int)
-- rankBasic properties:
-        - if p1 is prefix of p2, rank (p1) > rank (p2)
-        - if p is common prefix of p1 and p2, rank(p1) = rank (p2) < rank (p)
+nextstep0.01: BeFS returns paths in opposite order as expected - investigate
+nextstep0.02: BeFS tests using rankBasic take too long (probably because of nextstep0.01)
 nextstep0.1 - BeFS: empty backlog is not empty list, it's a list containing one empty path - is it correct? how should I handle this?
 nextstep0.21 - BeFS: delete fully expanded paths from backlog
         - mame ich detekovat v momente, ked sa ocitnu v backlogu, alebo az v momente, ked ich skusame rozexpandovat?
