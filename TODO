@@ -3,7 +3,7 @@
 # LLOYD15
 #
 #################
-nextstep0.05 - BeFS: issue with rankBasic - how we are supposed the proceed if every reasonable heuristics takes a path with lowest heuristics, while any magical numbers we are able to provide must be increasing? (we can make an estimate of 15!, but that won't fit into an Int)
+nextstep0.05 - BeFS - recompute correct first paths now when we changed the ordering in an attempt to do stable sort on backlog
 - rankBasic properties:
         - if p1 is prefix of p2, rank (p1) > rank (p2)
         - if p is common prefix of p1 and p2, rank(p1) = rank (p2) < rank (p)
@@ -24,7 +24,7 @@ nextstep0.6: daj selectPromising do monadoveho kontextu
  nextstep1.1: presun pick do auxu pre DFS/BeFs
  nextstep1.2: nase DFS je vlastne BeFS - urob prislusne upravy
  nextstep1.3: prejst sigfpeho clanky a vziat si z nich, co mozem
- nextstep1.4: ukladat backlog do leftist haldy module heaps)
+ nextstep1.4: ukladat backlog do leftist haldy (module heaps)
  nextstep1.5: implement typeclass Searchable which implements FunctionStore functions
  nextstep2: implement search algorithms
  BFS

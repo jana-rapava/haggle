@@ -92,7 +92,8 @@ aaboard = M { blank = blank0,height = boardHeight0,
         content = [(0,'B'),(1,'A'),
         (2,'C'),(3,'.')]}
 
-paths0 = [[board0, board0'], [board0, aboard10, aboard9, aboard8, aboard7, aboard6, aboard5, aboard4, aboard3, aboard2, aboard1, board0']]
+path0 = [board0, aboard10, aboard9, aboard8, aboard7, aboard6, aboard5, aboard4, aboard3, aboard2, aboard1, board0']
+paths0 = [path0, [board0, board0']]
 paths0rev = [[board0, aboard10, aboard9, aboard8, aboard7, aboard6, aboard5, aboard4, aboard3, aboard2, aboard1, board0'], [board0, board0']]
 stopSuccess0 = (== board0)
 stopFail0 :: [Matrix a] -> Bool

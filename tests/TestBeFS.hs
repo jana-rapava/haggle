@@ -23,7 +23,7 @@ testAddTo = TestCase $ assertEqual ""
 
 testSearchFirstBeFS0 :: Test
 testSearchFirstBeFS0 = TestCase $ assertEqual ""
-        [board0, board0']
+        path0
         (head $ befs board0'
 --        (fromJust $ searchFirst board0' blank0
         (FS {
