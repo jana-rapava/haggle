@@ -206,10 +206,11 @@ main = runTestTT $ TestList [
         testAddTo,
         testSearchFirstBeFS0,
         testSearchBeFS0Basic,
-        testSearchBeFS0Fail,
-        --testSearchFirstBeFS1Basic,
-        testSearchFirstBeFS1Xrank11,
-        testSearchFirstBeFS1Xrank12,
-        --testSearchFirstBeFS1Xxboard1,
-        testSearchBeFS1GetSecond
+        testSearchBeFS0Fail--,
+--         testSearchFirstBeFS1Basic,
+--         testSearchFirstBeFS1Xrank11,
+--         testSearchFirstBeFS1Xrank12,
+--         testSearchFirstBeFS1Xxboard1,
+--         testSearchBeFS1GetSecond,
+--         testSearchFirstBeFS0
         ]

@@ -47,8 +47,8 @@ befs' path = do
         let
             b = (head . fst) path
             backlog = getSortedList backlog'
-            next = prune (nextBoards b) (fst path) in
---          next = prune (nextBoards [b] blank) (trace ("\npath': " ++ show (map content path') ++ "\nbacklog: " ++ show (((map.map) content) backlog)) path') in
+--            next = prune (nextBoards b) (fst path) in
+            next = prune (nextBoards b) (fst (trace ("\nbacklog: " ++ show backlog) path)) in
             if (stopSuccess b)
             then
                 case split backlog of
@@ -71,8 +71,8 @@ befs' path = do
                 else
                     let paths2 = pickAndMerge rank next path
                         backlog2 = getSortedList $ addTo backlog' paths2 in do
---                    put (path', trace ("\n bl: " ++ show bl ++ "\n backlog: " ++ show (backlog)) (bl:backlog))
-                        put (SortedList $ tail backlog2)
+                        put (SortedList $ tail (trace ("\n backlog2: " ++ show backlog2) backlog2))
+--                        put (SortedList $ tail backlog2)
                         befs' (head backlog2)
 
 befs :: (Eq a, Show a) => Matrix a -> FunctionStore a -> [[Matrix a]]
