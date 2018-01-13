@@ -3,30 +3,10 @@
 # LLOYD15
 #
 #################
-- rankBasic properties:
-        - if p1 is prefix of p2, rank (p1) > rank (p2)
-        - if p is common prefix of p1 and p2, rank(p1) = rank (p2) < rank (p)
-nextstep0.01: BeFS returns paths in opposite order as expected - investigate
-nextstep0.02: BeFS tests using rankBasic take too long (probably because of nextstep0.01)
-nextstep0.1 - BeFS: empty backlog is not empty list, it's a list containing one empty path - is it correct? how should I handle this?
-nextstep0.21 - BeFS: delete fully expanded paths from backlog
-        - mame ich detekovat v momente, ked sa ocitnu v backlogu, alebo az v momente, ked ich skusame rozexpandovat?
-        - co sa stane, ked skusime expandovat plne expandovanu cestu?
-nextstep1.0 - figure out how to implement rankBasic2
-neststep0.16 - rewrite DFS with BeFS
-nextstep0.17 - implement iterative deepening
-nextstep0.2: implemtuj backtracking pre LDS - diskrepancie sa posuvaju zdola nahor - posledny uzol na ceste je diskrepancny
- -urob list comprehension nad vsetkymi uzlami na ceste, na kazdu prislusnu podcestu z korena sa zavolaj rekurzivne - bud zachovam pocet moznych diskrepancii a pokracujem optimalnym synom, alebo ho znizim o 1 a pokracujem bez heuristiky
-nextstep0.25: ako sa aplikuje nextBoards na backlog? sprava sa to ako monada/applicative?
-nextstep0.3: implementuj DFS do danej hlbky
-nextstep0.4: daj do stopFail 2 intovy argument (hlbku)
-nextstep0.5: presun level v BFS do State monady
-nextstep0.6: daj selectPromising do monadoveho kontextu
- nextstep1.1: presun pick do auxu pre DFS/BeFs
- nextstep1.2: nase DFS je vlastne BeFS - urob prislusne upravy
- nextstep1.3: prejst sigfpeho clanky a vziat si z nich, co mozem
+ nextstep1: implementuj Matrix ako Expandable
+ nextstep1.1: otestuj a odlad BeFS a BFS
+ nextstep1.2: skus spojit, implementuj >>= pre nasu monadu
  nextstep1.4: ukladat backlog do leftist haldy (module heaps)
- nextstep1.5: implement typeclass Searchable which implements FunctionStore functions
  nextstep2: implement search algorithms
  BFS
  best-first search (should we be able to come back and expand completely different node if it's better than any child of current node? how for goodness sake am I supposed to implement that? asi ukladat uzly aj s hodnotou heuristiky a pamatat si najlepsiu heuristiku v backlogu - prvy uzol s touto hodnotu, ktory najdem, expandujem)
@@ -36,28 +16,13 @@ nextstep0.6: daj selectPromising do monadoveho kontextu
   - be able to select list from backlog, edit it, and put it back
   - be able to get worst node stored in backlog
  Monte Carlo Tree Search (basically write a very special heuristic function)
-nextstep3: make the algorithms consistent with each other
- nextstep4: pridaj do FunctionStore akcie, ktore sa maju vykonat pri stopFail a stopSuccess
- nextstep5: pridaj do FunctionStore aux hashmapu pre paramtre rozlicnych algoritmov
- nextstep7: do some profiling
- first way to make it consistent:
- DFS: stopSuccess -> return solution(s) ++ backtrack no matter the depth
- else if stopFail backtrack else if depth > 0 recurse else backtrack
- BFS: any stopSuccess -> return solutions ++ if depth > 0 recurse else finish
- else if stopFail finish else if depth > 0 recurse else finish
- second way to make it consistent:
- BFS: if stopFail finish
- else if (any StopSuccess) return solution(s) and continue else continue
- DFS: if stopFail then if stopSuccess return solution and backtrack else backtrack
- else if stopSuccess return solution and backtrack else recurse
+nextstep5: ako sa aplikuje nextBoards na backlog? sprava sa to ako monada/applicative?
  existuje operator pre skladanie funkcii, ktory dostane f,g,h a x a zavola f (g x) (h x)?
  this is composition operator for 2 unary functions
 c2 :: (a -> b) -> (a -> c) -> (b -> c -> d) -> a -> d
 c2 f g1 g2 x = f (g x) (h x)
  pointfreed: flip . (ap .) . flip (.)
- a ked nebudem ukladat prazdne backlogy z jednotlivych krokov, tym vlastne implementujem backjumping :-)
- pridat do FunctionStore backtrackSuccess, backtrackFail, continue
- use array for matrices and adjacent
+ ?use array for matrices and adjacent
  use something which can be reorganized and pruned fast for paths (can I get better complexity than nlog n when I need only delete and lookup? I can built optimal search tree for a given set and then mark entries as deleted; so 'lookup, then delete' will be O(log n), but now I have problem with stopping condition
  * each node has two extra fields: deleted and marked
  * when searching for data:
@@ -66,15 +31,6 @@ c2 f g1 g2 x = f (g x) (h x)
       * I find them in an unmarked node -> delete
  use something with stack operations which saves memory for backlog
  use lenses instead of lists (probably would not pay off)
- implentuj rozlicne prehladavacie algoritmy
- design searchFirst as a nice interface - uzivatel moze nastavit:
- * blank (blankSymbol) - hashmapa aux do FunctionStore (or put blankSymbol into the Matrix structure?)
- * stopSuccess (result)
- * stopFail
- * pick
- * prune
- kde bude hranica medzi abstraktnymi a konkretnymi funkciami?
- ?make a typeclass for everything which has an empty element (empty in which sense? what laws should hold?)
 
 #################
 #

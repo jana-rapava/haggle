@@ -1,80 +1,34 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module BeFS where
 
-import Lloyd15
-import FunctionStore
-import Data.Function (on)
-import Data.List (sortBy)
-import Control.Monad.Reader
+import Path
+import Expandable
 import Control.Monad.State.Lazy
-import Control.Monad.Trans.Maybe
 import Debug.Trace
 
-type Path a = ([Matrix a], Integer)
+befs :: (Expandable a) =>
+        (a -> Int) ->
+        State (SList (Path a), Int) [[a]]
+befs f = do
+        backlog0 <- fst . get
+        case (getSList backlog0) of
+                [] -> return []
+                ((P (path0,rank0)):backlog1) -> let active = head path0,
+                                                    result = prune (expand active) path0 in do
+                                                        case (result of)
+                                                            Fail -> do
+                                                                    put (SList backlog1, 0)
+                                                                    paths1 <- befs f
+                                                                    return paths1
+                                                            Success _ -> do
+                                                                        put (SList backlog1, 0)
+                                                                        paths1 <- befs f
+                                                                        return (path0:paths1)
+                                                            Sons sons -> let lists0 = lengthen path0 sons,
+                                                                            paths0 = zip lists0 (map (rank f) lists0),
+                                                                            backlog2 = addSorted backlog1 (P paths0) in do
+                                                                                put (SList backlog2, 0)
+                                                                                befs f
 
-newtype SortedList a = SortedList {getSortedList :: [a]} deriving (Functor, Show, Eq)
-
-split :: [Path a] -> Maybe (Path a, [Path a])
-split [] = Nothing
-split (p:ps) = Just (p, ps)
-
--- prolong path by all the possible next state, rank new paths
-pickAndMerge :: Show a => (Matrix a -> Integer -> Integer) -> [Matrix a] -> Path a -> [Path a]
-pickAndMerge rank bs (path,r) = zip (zipWith (:) (map fst sbs) (repeat path)) (map snd sbs)
-        where
-            l = length bs
-            ns = replicate l (r-1)
-            rbs = zip bs (zipWith rank bs ns)
-            sbs = sortBy (compare `on` snd) rbs
-
-insert :: Path a -> SortedList (Path a) -> SortedList (Path a)
-insert (p,r) (SortedList []) = SortedList [(p,r)]
-insert (p1,r1) (SortedList ((p2,r2):ps)) = if (r1 > r2) then SortedList ((p2,r2): (getSortedList (insert (p1,r1) (SortedList ps)))) else SortedList ((p1,r1):(p2,r2):ps)
-
--- sort new paths into backlog
-addTo :: SortedList (Path a) -> [Path a] -> SortedList (Path a)
-addTo backlog ps = foldr insert backlog ps
-
-befs' :: (Eq a, Show a) =>
-        Path a ->
-        StateT (SortedList (Path a)) (Reader (FunctionStore a)) [[Matrix a]]
-befs' path = do
-        stopSuccess <- asks stopSuccess
-        stopFail <- asks stopFail
-        rank <- asks rank
-        prune <- asks prune
-        backlog' <- get
-        let
-            b = (head . fst) path
-            backlog = getSortedList backlog'
---            next = prune (nextBoards b) (fst path) in
-            next = prune (nextBoards b) (fst (trace ("\nbacklog: " ++ show backlog) path)) in
-            if (stopSuccess b)
-            then
-                case split backlog of
-                Nothing -> return [fst path]
-                Just (path2, backlog2) -> do
-                    put (SortedList backlog2)
---                  put ((trace ("\n path2: " ++ show path2) path2), (trace ("\nbacklog2: " ++ show backlog2) backlog2))
-                    paths <- befs' path2
---                    paths <- dfs' (trace (" \n next2: " ++ show next2) next2) blank
-                    return ((fst path):paths)
-            else
-                if (stopFail next)
---              if (trace ("\nnext: " ++ show next) stopFail next)
-                then
-                    case split backlog of
-                    Nothing -> return []
-                    Just (path2, backlog2) -> do
-                        put (SortedList backlog2)
-                        befs' path2
-                else
-                    let paths2 = pickAndMerge rank next path
-                        backlog2 = getSortedList $ addTo backlog' paths2 in do
-                        put (SortedList $ tail (trace ("\n backlog2: " ++ show backlog2) backlog2))
---                        put (SortedList $ tail backlog2)
-                        befs' (head backlog2)
-
-befs :: (Eq a, Show a) => Matrix a -> FunctionStore a -> [[Matrix a]]
-befs b fs = fst $ runReader (runStateT (befs' b_path) (SortedList [])) fs
-        where b_path = ([b], trace ("estim = " ++ show (estim b)) (estim b))
+testBefs :: (Eq a, Show a, Expandable a) => a -> (a -> Int) -> [[Matrix a]]
+testBefs b f = fst $ runState (befs f) (SList [b_path])
+        where b_path = ([b], rank f [b])
