@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Lloyd15 (Matrix(..), Swap(..), generateBoard, generateSwaps, applySwap, nextBoards, computeAdjacent, estim)   where
+module Lloyd15 where
 
 import Control.Exception (assert)
 import Data.Maybe (catMaybes, fromJust)
@@ -29,7 +29,6 @@ data Swap a = S {
                 posFrom :: Int,
                 posTo :: Int
                 } deriving (Eq, Show)
-
 
 mkMatrix :: (a, Int, Int, [(Int,a)]) -> Matrix a
 mkMatrix (b, h, w, d) = M {blank = b, height = h, width = w, content = d}
@@ -64,10 +63,6 @@ computeAdjacent :: Int -> Int -> [[Int]]
 computeAdjacent boardHeight boardWidth = [grow boardHeight boardWidth seed | seed <- [0..size-1]]
     where size = boardHeight * boardWidth
 
-estim :: Matrix a -> Integer
-estim b = product [1..n]
-        where n = fromIntegral $ (height b) * (width b)
-
 findBlank :: (Eq a) => Matrix a -> Maybe Int
 findBlank b = elemIndex (blank b) (map snd $ content b)
 
@@ -95,3 +90,14 @@ applySwap board s = mkMatrix (blank board, height board, width board,
 
 nextBoards :: (Eq a) => Matrix a -> [Matrix a]
 nextBoards b = map (applySwap b) (generateSwaps b)
+
+success = "ABCD\
+           EFGH\
+           IJKL\
+           MNO."
+
+successBoard = generateBoard '.' 4 4 success
+
+instance Expandable (Matrix Char) where
+        stopSuccess = (== successBoard)
+        generateNbs = nextBoards
