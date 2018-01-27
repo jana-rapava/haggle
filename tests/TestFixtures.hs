@@ -3,7 +3,6 @@ module TestFixtures where
 import Lloyd15
 import Data.List ((\\), elemIndex)
 import Data.Maybe (fromJust)
-import BeFS (SortedList(..))
 
 -- this function determines the search order - change this to implement different heuristics
 --rankBasic :: Matrix a -> Integer -> Integer
@@ -32,37 +31,52 @@ import BeFS (SortedList(..))
 --------------
 -- TESTCASE #0 - fixtures
 --------------
- boardHeight0 = 2
- boardWidth0 = 2
- blank0 = '.'
- cellVals0 = "ABC."
+boardHeight0 = 2
+boardWidth0 = 2
+blank0 = '.'
+cellvals0 = "ABC."
 
- adjacent0 = [[1,2],[0,3],
+adjacent0 :: [[Int]]
+adjacent0 = [[1,2],[0,3],
          [0,3],[1,2]]
 
- board0 = generateBoard blank0 boardHeight0 boardWidth0 cellVals0
- nextBoards0
+board0 = generateBoard blank0 boardHeight0 boardWidth0 cellvals0
+
+board0a = M { blank = blank0,
+            height = boardHeight0,
+            width = boardWidth0,
+            content =
+            [(0,'A'), (1,'B'),
+            (2,'.'), (3,'C')]}
+board0b = M { blank = blank0,
+            height = boardHeight0,
+            width = boardWidth0,
+            content =
+            [(0,'A'),(1,'.'),
+            (2,'C'), (3,'B')]}
+nextBoards0 = [board0b, board0a]
 
 --------------
 -- TESTCASE #1 - fixtures
 --------------
- boardHeight1 = 4
- boardWidth1 = 4
- blank1 = '.'
- cellvals1 = "ABCD\
+boardHeight1 = 4
+boardWidth1 = 4
+blank1 = '.'
+cellvals1 = "ABCD\
          \EFGH\
          \IJKL\
          \MNO."
 
- adjacent1 = [[1,4],[0,2,5],[1,3,6],[2,7],
+adjacent1 :: [[Int]]
+adjacent1 = [[1,4],[0,2,5],[1,3,6],[2,7],
          [0,5,8], [1,4,6,9], [2,5,7,10], [3,6,11],
          [4,9,12], [5,8,10,13], [6,9,11,14], [7,10,15],
          [8,13], [9,12,14], [10,13,15], [11, 14]]
 
- board1 = generateBoard blank1 boardHeight1 boardWidth1 cellvals1
- swaps1 = [S {posFrom = 15, posTo = 11}, S {posFrom = 15, posTo = 14}]
+board1 = generateBoard blank1 boardHeight1 boardWidth1 cellvals1
+swaps1 = [S {posFrom = 15, posTo = 11}, S {posFrom = 15, posTo = 14}]
 
- board1a = M { blank = blank1,
+board1a = M { blank = blank1,
          height = boardHeight1,
          width = boardWidth1,
          content =
@@ -71,14 +85,14 @@ import BeFS (SortedList(..))
          (8,'I'), (9,'J'), (10,'K'), (11,'.'),
          (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
 
- board1b' = M { blank = blank1, height = boardHeight1,
+board1b' = M { blank = blank1, height = boardHeight1,
          width = boardWidth1,
          content =
          [(0,'A'), (1,'B'), (2,'C'), (3,'.'),
          (4,'E'), (5,'F'), (6,'G'), (7,'D'),
          (8,'I'), (9,'J'), (10,'K'), (11,'H'),
          (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
- board1b = M {  blank = blank1,height = boardHeight1,
+board1b = M {  blank = blank1,height = boardHeight1,
          width = boardWidth1,
          content =
          [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
@@ -86,15 +100,51 @@ import BeFS (SortedList(..))
          (8,'I'), (9,'J'), (10,'K'), (11,'H'),
          (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
 
- board1c = M {  blank = blank1,height = boardHeight1,
+board1c = M {  blank = blank1,height = boardHeight1,
          width = boardWidth1,
          content =
          [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
          (4,'E'), (5,'F'), (6,'G'), (7,'H'),
-         (8,'I'), (9,'J'), (10,'K'), (11,'L'),
-         (12,'M'), (13, 'N'), (14,'.'), (15,'O')]}
- nextBoards1 = [board1b', board1c]
+         (8,'I'), (9,'J'), (10,'.'), (11,'K'),
+         (12,'M'), (13, 'N'), (14,'O'), (15,'L')]}
+nextBoards1a = [board1b, board1c, board1]
 
+board1d = M {  blank = blank1,height = boardHeight1,
+         width = boardWidth1,
+         content =
+         [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+         (4,'E'), (5,'.'), (6,'G'), (7,'H'),
+         (8,'I'), (9,'F'), (10,'J'), (11,'K'),
+         (12,'M'), (13, 'N'), (14,'O'), (15,'L')]}
+board1ea = M {  blank = blank1,height = boardHeight1,
+         width = boardWidth1,
+         content =
+         [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+         (8,'I'), (9,'.'), (10,'J'), (11,'K'),
+         (12,'M'), (13, 'N'), (14,'O'), (15,'L')]}
+board1eb = M {  blank = blank1,height = boardHeight1,
+         width = boardWidth1,
+         content =
+         [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+         (4,'E'), (5,'G'), (6,'.'), (7,'H'),
+         (8,'I'), (9,'F'), (10,'J'), (11,'K'),
+         (12,'M'), (13, 'N'), (14,'O'), (15,'L')]}
+board1ec = M {  blank = blank1,height = boardHeight1,
+         width = boardWidth1,
+         content =
+         [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+         (4,'.'), (5,'E'), (6,'G'), (7,'H'),
+         (8,'I'), (9,'F'), (10,'J'), (11,'K'),
+         (12,'M'), (13, 'N'), (14,'O'), (15,'L')]}
+board1ed = M {  blank = blank1,height = boardHeight1,
+         width = boardWidth1,
+         content =
+         [(0,'A'), (1,'.'), (2,'C'), (3,'D'),
+         (4,'E'), (5,'B'), (6,'G'), (7,'H'),
+         (8,'I'), (9,'F'), (10,'J'), (11,'K'),
+         (12,'M'), (13, 'N'), (14,'O'), (15,'L')]}
+nextBoards1b = [board1ed, board1ec, board1eb, board1ea]
 --boardHeight0 = 2
 --boardWidth0 = 2
 --cellVals0 = "ABC."

@@ -1,4 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Lloyd15 where
 
@@ -9,6 +10,7 @@ import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
 import Debug.Trace
+import Expandable
 
 
 data Matrix a = M {
@@ -92,9 +94,9 @@ nextBoards :: (Eq a) => Matrix a -> [Matrix a]
 nextBoards b = map (applySwap b) (generateSwaps b)
 
 success = "ABCD\
-           EFGH\
-           IJKL\
-           MNO."
+           \EFGH\
+           \IJKL\
+           \MNO."
 
 successBoard = generateBoard '.' 4 4 success
 

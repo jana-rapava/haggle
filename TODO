@@ -3,10 +3,12 @@
 # LLOYD15
 #
 #################
- nextstep1: implementuj Matrix ako Expandable
- nextstep1.1: otestuj a odlad BeFS a BFS
- nextstep1.2: skus spojit, implementuj >>= pre nasu monadu
- nextstep1.4: ukladat backlog do leftist haldy (module heaps)
+ nextstep1.1: aktualizuj testy BeFS
+ nextstep1.2: otestuj a odlad BeFS
+ nextstep1.3: aktualizuj testy BFS
+ nextstep1.4: otestuj a odlad BFS
+ nextstep1.8: skus spojit, implementuj >>= pre nasu monadu
+ nextstep1.9: ukladat backlog do leftist haldy (module heaps)
  nextstep2: implement search algorithms
  BFS
  best-first search (should we be able to come back and expand completely different node if it's better than any child of current node? how for goodness sake am I supposed to implement that? asi ukladat uzly aj s hodnotou heuristiky a pamatat si najlepsiu heuristiku v backlogu - prvy uzol s touto hodnotu, ktory najdem, expandujem)

@@ -118,10 +118,13 @@ testApplySwap1b :: Test
 testApplySwap1b = TestCase $ assertEqual ""
         board1b (applySwap board1b' (S { posFrom = 3, posTo = 7}))
 
-testNextBoards1 :: Test
-testNextBoards1 = TestCase $ assertEqual ""
-        nextBoards1 (nextBoards board1)
+testNextBoards1a :: Test
+testNextBoards1a = TestCase $ assertEqual ""
+        nextBoards1a (nextBoards board1a)
 
+testNextBoards1b :: Test
+testNextBoards1b = TestCase $ assertEqual ""
+        nextBoards1b (nextBoards board1d)
 -- xboard3 = M {  blank = blank1,height = boardHeight1,
 --         width = boardWidth1,
 --         content =
@@ -255,5 +258,6 @@ main = runTestTT $ TestList [
         testGenerateSwaps1,
         testApplySwap1a,
         testApplySwap1b,
-        testNextBoards1
+        testNextBoards1a,
+        testNextBoards1b
         ]

@@ -1,8 +1,10 @@
 module Expandable where
 
+import Data.List ((\\))
+
 data Result a = Fail | Success a | Sons [a]
 
-class Expandable a where
+class Eq a => Expandable a where
         stopSuccess :: a -> Bool
         stopFail :: [a] -> Bool
         rank :: (a -> Int) -> [a] -> Int
@@ -16,11 +18,11 @@ class Expandable a where
         -- we checked when we added the node to the path
         -- !!! add check when putting start node into the monad
         prune (Success x) _ = Success x
-        prune (Sons xs) ps = let (xs' = xs \\ ps) in
+        prune (Sons xs) ps = let xs' = xs \\ ps in
                                 if (null xs') then Fail
                                 else (Sons xs')
 
-lenghten :: [a] -> [a] -> [a]
+lenghten :: [a] -> [a] -> [[a]]
 lenghten path sons = [s:path | s <- sons]
 
 -- wrapper for simplification
