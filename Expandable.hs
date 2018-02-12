@@ -22,8 +22,8 @@ class Eq a => Expandable a where
                                 if (null xs') then Fail
                                 else (Sons xs')
 
-lenghten :: [a] -> [a] -> [[a]]
-lenghten path sons = [s:path | s <- sons]
+lengthen :: [a] -> [a] -> [[a]]
+lengthen path sons = [s:path | s <- sons]
 
 -- wrapper for simplification
 expand :: (Expandable a) => a -> Result a

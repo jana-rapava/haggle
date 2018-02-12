@@ -9,12 +9,12 @@ befs :: (Expandable a) =>
         (a -> Int) ->
         State (SList (Path a), Int) [[a]]
 befs f = do
-        backlog0 <- fst . get
-        case (getSList backlog0) of
+           backlog0 <- get
+           case (getSList $ fst $ backlog0) of
                 [] -> return []
-                ((P (path0,rank0)):backlog1) -> let active = head path0,
+                ((P (path0,rank0)):backlog1) -> let active = head path0
                                                     result = prune (expand active) path0 in do
-                                                        case (result of)
+                                                        case (result) of
                                                             Fail -> do
                                                                     put (SList backlog1, 0)
                                                                     paths1 <- befs f
@@ -23,12 +23,12 @@ befs f = do
                                                                         put (SList backlog1, 0)
                                                                         paths1 <- befs f
                                                                         return (path0:paths1)
-                                                            Sons sons -> let lists0 = lengthen path0 sons,
-                                                                            paths0 = zip lists0 (map (rank f) lists0),
-                                                                            backlog2 = addSorted backlog1 (P paths0) in do
+                                                            Sons sons -> let lists0 = lengthen path0 sons
+                                                                             paths0 = zip lists0 (map (rank f) lists0)
+                                                                             backlog2 = addSorted backlog1 (map P paths0) in do
                                                                                 put (SList backlog2, 0)
                                                                                 befs f
 
-testBefs :: (Eq a, Show a, Expandable a) => a -> (a -> Int) -> [[Matrix a]]
-testBefs b f = fst $ runState (befs f) (SList [b_path])
-        where b_path = ([b], rank f [b])
+testBefs :: (Eq a, Show a, Expandable a) => a -> (a -> Int) -> [[a]]
+testBefs b f = fst $ runState (befs f) (SList [b_path], 0)
+        where b_path = P $([b], rank f [b])

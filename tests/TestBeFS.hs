@@ -2,53 +2,40 @@ module TestBeFS where
 
 import Test.HUnit
 import BeFS
-import FunctionStore
+-- import FunctionStore
 import TestFixtures
 
 ---------------
 -- TESTCASE #0
 ---------------
 
-testPickAndMerge1 :: Test
-testPickAndMerge1 = TestCase $ assertEqual ""
-        paths1 (pickAndMerge rankBasic nextBoards1 path1)
+-- testPickAndMerge1 :: Test
+-- testPickAndMerge1 = TestCase $ assertEqual ""
+--         paths1 (pickAndMerge rankBasic nextBoards1 path1)
+--
+-- testPickAndMerge2 :: Test
+-- testPickAndMerge2 = TestCase $ assertEqual ""
+--         paths2 (pickAndMerge xrank11 nextBoards1 path1)
+--
+-- testAddTo :: Test
+-- testAddTo = TestCase $ assertEqual ""
+--         paths5 (addTo paths3 paths4)
 
-testPickAndMerge2 :: Test
-testPickAndMerge2 = TestCase $ assertEqual ""
-        paths2 (pickAndMerge xrank11 nextBoards1 path1)
-
-testAddTo :: Test
-testAddTo = TestCase $ assertEqual ""
-        paths5 (addTo paths3 paths4)
-
-testSearchFirstBeFS0 :: Test
-testSearchFirstBeFS0 = TestCase $ assertEqual ""
+testSearchFirstBeFS0c :: Test
+testSearchFirstBeFS0c = TestCase $ assertEqual ""
         path0
-        (head $ befs board0'
---        (fromJust $ searchFirst board0' blank0
-        (FS {
-        stopSuccess = stopSuccess0,
-        stopFail = stopFail0,
-        rank = rankBasic,
-        prune = pruneBasic})
-        )
+        (head $ testBefs board0c rankBasic)
 
 
-testSearchBeFS0Basic :: Test
-testSearchBeFS0Basic = TestCase $ assertEqual ""
+testSearchBeFS0c :: Test
+testSearchBeFS0c = TestCase $ assertEqual ""
         paths0
-        (befs board0'
-        (FS {
-        stopSuccess = stopSuccess0,
-        stopFail = stopFail0,
-        rank = rankBasic,
-        prune = pruneBasic})
-        )
+        (testBefs board0c rankBasic)
 
 -- testSearchBeFS0Basic2 :: Test
 -- testSearchBeFS0_2 = TestCase $ assertEqual ""
 --         paths0rev
---         (dfs board0'
+--         (dfs board0c
 --         (FS {
 --         stopSuccess = stopSuccess0,
 --         stopFail = stopFail0,
@@ -56,75 +43,39 @@ testSearchBeFS0Basic = TestCase $ assertEqual ""
 --         prune = pruneBasic})
 --         )
 
-testSearchBeFS0Fail :: Test
-testSearchBeFS0Fail = TestCase $ assertEqual ""
+testSearchBeFS0n :: Test
+testSearchBeFS0n = TestCase $ assertEqual ""
         []
-        (befs aaboard
-        (FS {
-        stopSuccess = stopSuccess0,
-        stopFail = stopFail0,
-        rank = rankBasic,
-        prune = pruneBasic})
-        )
+        (testBefs board0n rankBasic)
 
 --------------------
 -- TESTCASE #1
 --------------------
 
-testSearchFirstBeFS1Basic :: Test
-testSearchFirstBeFS1Basic = TestCase $ assertEqual ""
+testSearchFirstBeFS1hBasic :: Test
+testSearchFirstBeFS1hBasic = TestCase $ assertEqual ""
         rightmost1
-        (head $ befs xboard1
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        rank = rankBasic,
-        prune = pruneBasic})
-        )
+        (head $ testBefs board1h rankBasic)
 
-testSearchFirstBeFS1Xrank11 :: Test
-testSearchFirstBeFS1Xrank11 = TestCase $ assertEqual ""
+testSearchFirstBeFS1hmisplaced :: Test
+testSearchFirstBeFS1hmisplaced = TestCase $ assertEqual ""
         rightmost1
-        (head $ befs xboard1
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        rank = xrank11,
-        prune = pruneBasic})
-        )
+        (head $ testBefs board1h misplaced)
 
-testSearchFirstBeFS1Xrank12 :: Test
-testSearchFirstBeFS1Xrank12 = TestCase $ assertEqual ""
+testSearchFirstBeFS1hmanhattan_sum :: Test
+testSearchFirstBeFS1hmanhattan_sum = TestCase $ assertEqual ""
         rightmost1
-        (head $ befs xboard1
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        rank = xrank12,
-        prune = pruneBasic})
-        )
+        (head $ testBefs board1h manhattan_sum)
 
-testSearchFirstBeFS1Xxboard1 :: Test
-testSearchFirstBeFS1Xxboard1 = TestCase $ assertEqual ""
-         [board1, xxboard1]
-         (head $ befs xxboard1
-         (FS {
-         stopSuccess = stopSuccess1,
-         stopFail = stopFail1,
-         rank = rankBasic,
-         prune = pruneBasic})
-         )
+testSearchFirstBeFS1xBasic :: Test
+testSearchFirstBeFS1xBasic = TestCase $ assertEqual ""
+         [board1, board1x]
+         (head $ testBefs board1x rankBasic)
 
-testSearchBeFS1GetSecond :: Test
-testSearchBeFS1GetSecond = TestCase $ assertEqual ""
-        [board1, xboard16, xboard15, xboard14, xboard13, xboard12, xboard11, xboard10, xboard9, xboard8, xboard7,xxboard1]
-        (head $ drop 1 $ befs xxboard1
-        (FS {
-        stopSuccess = stopSuccess1,
-        stopFail = stopFail1,
-        rank = xrank12,
-        prune = pruneBasic})
-        )
+testSearchSecondBeFS1xmanhattan_sum :: Test
+testSearchSecondBeFS1xmanhattan_sum = TestCase $ assertEqual ""
+        [board1, board1w, board1v, board1u, board1t, board1s, board1r, board1q, board1p, board1o, board1n, board1x]
+        (head $ drop 1 $ testBefs board1x manhattan_sum)
 
 ---------------------
 -- TESTCASE #2
@@ -201,12 +152,12 @@ testSearchBeFS1GetSecond = TestCase $ assertEqual ""
 --        )
 main :: IO Counts
 main = runTestTT $ TestList [
-        testPickAndMerge1,
-        testPickAndMerge2,
-        testAddTo,
-        testSearchFirstBeFS0,
-        testSearchBeFS0Basic,
-        testSearchBeFS0Fail--,
+--        testPickAndMerge1,
+--        testPickAndMerge2,
+--        testAddTo,
+        testSearchFirstBeFS0c,
+        testSearchBeFS0c,
+        testSearchBeFS0n--,
 --         testSearchFirstBeFS1Basic,
 --         testSearchFirstBeFS1Xrank11,
 --         testSearchFirstBeFS1Xrank12,
