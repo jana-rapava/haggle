@@ -1,8 +1,9 @@
 module Expandable where
 
 import Data.List ((\\))
+import Debug.Trace
 
-data Result a = Fail | Success a | Sons [a]
+data Result a = Fail | Success a | Sons [a] deriving (Show)
 
 class Eq a => Expandable a where
         stopSuccess :: a -> Bool
@@ -26,8 +27,8 @@ lengthen :: [a] -> [a] -> [[a]]
 lengthen path sons = [s:path | s <- sons]
 
 -- wrapper for simplification
-expand :: (Expandable a) => a -> Result a
-expand active = if (stopSuccess active) then Success active
+expand :: (Expandable a, Show a) => a -> Result a
+expand active = if (stopSuccess (trace ("active " ++ show active) active)) then Success active
                 else let sons = generateNbs active in
                         if (stopFail sons) then Fail
                         else (Sons sons)

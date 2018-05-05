@@ -5,16 +5,16 @@ import Expandable
 import Control.Monad.State.Lazy
 import Debug.Trace
 
-befs :: (Expandable a) =>
+befs :: (Expandable a, Show a) =>
         (a -> Int) ->
         State (SList (Path a), Int) [[a]]
 befs f = do
            backlog0 <- get
            case (getSList $ fst $ backlog0) of
                 [] -> return []
-                ((P (path0,rank0)):backlog1) -> let active = head path0
+                ((P (path0,rank0)):backlog1) -> let active = head (trace ("path0 " ++ show path0) path0)
                                                     result = prune (expand active) path0 in do
-                                                        case (result) of
+                                                        case (trace ("result " ++ show result) result) of
                                                             Fail -> do
                                                                     put (SList backlog1, 0)
                                                                     paths1 <- befs f
