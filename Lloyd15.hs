@@ -1,5 +1,4 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE FlexibleInstances #-}
 
 module Lloyd15 where
 
@@ -10,7 +9,6 @@ import Control.Monad.Reader
 import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
 import Debug.Trace
-import Expandable
 
 
 data Matrix a = M {
@@ -19,6 +17,7 @@ data Matrix a = M {
                 width :: Int,
                 content :: [(Int, a)]
                 } deriving (Eq)
+
 
 show' [] = ""
 show' (a:b:c:d:ms) = show (map snd (a:b:c:[d])) ++  "\n" ++ show' ms
@@ -93,13 +92,3 @@ applySwap board s = mkMatrix (blank board, height board, width board,
 nextBoards :: (Eq a) => Matrix a -> [Matrix a]
 nextBoards b = map (applySwap b) (generateSwaps b)
 
-success = "ABCD\
-           \EFGH\
-           \IJKL\
-           \MNO."
-
-successBoard = generateBoard '.' 4 4 success
-
-instance Expandable (Matrix Char) where
-        stopSuccess = (== successBoard)
-        generateNbs = nextBoards

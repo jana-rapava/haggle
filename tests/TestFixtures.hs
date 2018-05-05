@@ -211,13 +211,6 @@ board1f = M { blank = blank1,
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'.'),
         (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
-board1h = M { blank = blank1, height = boardHeight1,
-        width = boardWidth1,
-        content =
-        [(0,'A'), (1,'B'), (2,'C'), (3,'.'),
-        (4,'E'), (5,'F'), (6,'G'), (7,'D'),
-        (8,'I'), (9,'J'), (10,'K'), (11,'H'),
-        (12,'M'), (13,'N'), (14,'O'), (15,'L')]}
 board1i = M {  blank = blank1,height = boardHeight1,
         width = boardWidth1,
         content =
@@ -330,6 +323,20 @@ board1x = M {  blank = blank1,height = boardHeight1,
         (4,'E'), (5,'F'), (6,'G'), (7,'H'),
         (8,'I'), (9,'J'), (10,'K'), (11,'L'),
         (12,'M'), (13, 'N'), (14,'.'), (15,'O')]}
+board1y = M {  blank = blank1,height = boardHeight1,
+        width = boardWidth1,
+        content =
+        [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'.'), (11,'L'),
+        (12,'M'), (13, 'N'), (14,'K'), (15,'O')]}
+board1z = M {  blank = blank1,height = boardHeight1,
+        width = boardWidth1,
+        content =
+        [(0,'A'), (1,'B'), (2,'C'), (3,'D'),
+        (4,'E'), (5,'F'), (6,'G'), (7,'H'),
+        (8,'I'), (9,'J'), (10,'K'), (11,'L'),
+        (12,'M'), (13, 'O'), (14,'N'), (15,'.')]}
 nextBoards1c = [board1f, board1x]
 path1 :: ([Matrix Char], Integer)
 path1 = ([board1], 1)
@@ -347,7 +354,7 @@ paths5 :: SList ([Matrix Char], Integer)
 --paths5 = SList [([board1t, board1],3), ([board1s, board1f, board1], 5), ([board1u, board1], 8)]
 paths5 = SList [([board1t, board1],3),([board1f, board1],5),([board1s, board1f, board1], 5),([board1v,board1f,board1], 6),([board1x, board1],7),([board1u, board1], 8)]
 xbacklog1 = [[board1k], [board1l], [board1m],[]]
-rightmost1 = [board1, board1j, board1i, board1h]
+rightmost1 = [board1, board1x, board1y]
 
 misplaced = misplaced' board1
 manhattan_sum = manhattan_sum' boardHeight1 boardWidth1 board1
