@@ -1,6 +1,6 @@
 module InfInt where
 
-data InfInt = Fin Integer | Inf deriving (Eq, Show)
+data InfInt = Fin Int | Inf deriving (Eq, Show)
 
 instance Num InfInt where
         (Fin x) + (Fin y) = Fin (x + y)
@@ -17,8 +17,14 @@ instance Num InfInt where
         signum (Fin x) = Fin (signum x)
         signum Inf = 1
 
-        fromInteger x = Fin x
+        fromInteger x = Fin (fromInteger x)
 
         negate (Fin x) = Fin (negate x)
         negate Inf = Inf
+
+instance Ord InfInt where
+        (Fin x) `compare` (Fin y) = x `compare` y
+        Inf `compare` (Fin x) = GT
+        (Fin x) `compare` Inf = LT
+        Inf `compare` Inf = EQ
 

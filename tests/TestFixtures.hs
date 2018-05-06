@@ -111,7 +111,8 @@ board0n = M { blank = blank0,height = boardHeight0,
 
 path0 = [board0, board0m, board0l, board0k, board0j, board0i, board0h, board0g, board0f, board0e, board0d, board0c]
 paths0 = [path0, [board0, board0c]]
-paths0rev = [[board0, board0m, board0l, board0k, board0j, board0i, board0h, board0g, board0f, board0e, board0d, board0c], [board0, board0c]]
+paths0rev = [[board0, board0c], path0]
+--paths0rev = [[board0, board0m, board0l, board0k, board0j, board0i, board0h, board0g, board0f, board0e, board0d, board0c], [board0, board0c]]
 
 --------------
 -- TESTCASE #1 - fixtures
@@ -359,29 +360,3 @@ rightmost1 = [board1, board1x, board1y]
 misplaced = misplaced' board1
 manhattan_sum = manhattan_sum' boardHeight1 boardWidth1 board1
 
---boardHeight0 = 2
---boardWidth0 = 2
---cellVals0 = "ABC."
---adjacent0 = [[1,2],[0,3],
---        [0,3],[1,2]]
---blank0 = '.'
---board0 = generateBoard blank0 boardHeight0 boardWidth0 cellVals0
-
---------------
--- TESTCASE #1
---------------
-
---boardHeight1 = 4
---boardWidth1 = 4
---cellvals1 = "ABCD\
---        \EFGH\
---        \IJKL\
---        \MNO."
---adjacent1 :: [[Int]]
---adjacent1 = [[1,4],[0,2,5],[1,3,6],[2,7],
---        [0,5,8], [1,4,6,9], [2,5,7,10], [3,6,11],
---        [4,9,12], [5,8,10,13], [6,9,11,14], [7,10,15],
---        [8,13], [9,12,14], [10,13,15], [11, 14]]
---blank1 = '.'
---board1 = generateBoard blank1 boardHeight1 boardWidth1 cellvals1
---swaps1 = [S {posFrom = 15, posTo = 11}, S {posFrom = 15, posTo = 14}]
