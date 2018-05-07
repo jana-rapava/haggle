@@ -7,16 +7,9 @@ import BeFS
 -- import FunctionStore
 import TestFixtures
 import Lloyd15
+import Success2x2
 import Expandable
 
-success = "AB\
-            \C."
-
-successBoard = generateBoard '.' 2 2 success
-
-instance Expandable (Matrix Char) where
-        stopSuccess = (== successBoard)
-        generateNbs = nextBoards
 ---------------
 -- TESTCASE #0
 ---------------

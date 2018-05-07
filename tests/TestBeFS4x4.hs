@@ -7,18 +7,8 @@ import BeFS
 -- import FunctionStore
 import TestFixtures
 import Lloyd15
+import Success4x4
 import Expandable
-
-success = "ABCD\
-           \EFGH\
-           \IJKL\
-           \MNO."
-
-successBoard = generateBoard '.' 4 4 success
-
-instance Expandable (Matrix Char) where
-        stopSuccess = (== successBoard)
-        generateNbs = nextBoards
 
 --------------------
 -- TESTCASE #1
