@@ -24,20 +24,30 @@ instance Expandable (Matrix Char) where
 ---------------
 -- TESTCASE #0
 ---------------
+testSearchFirstBFS1Basic_2 :: Test
+testSearchFirstBFS1Basic_2 = TestCase $ assertEqual ""
+         []
+         (testBfs board1y 2)
+
 testSearchFirstBFS1Basic_4 :: Test
 testSearchFirstBFS1Basic_4 = TestCase $ assertEqual ""
          rightmost1
          (head $ testBfs board1y 4)
 
-testSearchFirstBFS1Xxboard1_2 :: Test
-testSearchFirstBFS1Xxboard1_2 = TestCase $ assertEqual ""
-        [board1, board1x]
-        (head $ testBfs board1x 2)
-
 testSearchFirstBFS1Basic_Inf :: Test
 testSearchFirstBFS1Basic_Inf = TestCase $ assertEqual ""
         rightmost1
         (head $ testBfs board1y Inf)
+
+testSearchFirstBFS1Xxboard1_1 :: Test
+testSearchFirstBFS1Xxboard1_1 = TestCase $ assertEqual ""
+        []
+        (testBfs board1x 1)
+
+testSearchFirstBFS1Xxboard1_2 :: Test
+testSearchFirstBFS1Xxboard1_2 = TestCase $ assertEqual ""
+        [board1, board1x]
+        (head $ testBfs board1x 2)
 
 testSearchFirstBFS1Xxboard1_Inf :: Test
 testSearchFirstBFS1Xxboard1_Inf = TestCase $ assertEqual ""
@@ -46,8 +56,10 @@ testSearchFirstBFS1Xxboard1_Inf = TestCase $ assertEqual ""
 
 main :: IO Counts
 main = runTestTT $ TestList [
+        testSearchFirstBFS1Basic_2,
         testSearchFirstBFS1Basic_4,
+        testSearchFirstBFS1Xxboard1_1,
         testSearchFirstBFS1Xxboard1_2,
         testSearchFirstBFS1Basic_Inf,
-        testSearchFirstBFS1Xxboard1_Inf--,
+        testSearchFirstBFS1Xxboard1_Inf
         ]
