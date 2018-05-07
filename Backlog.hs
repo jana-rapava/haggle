@@ -17,11 +17,15 @@ with x = let
 safeHead :: [[a]] -> Maybe [a]
 safeHead = find (\x -> True)
 
-one :: (Show a) => State (SList (Path a), Int) [[a]] -> IO ()
-one = print . safeHead . fst . ((flip runState) (SList [],0))
+getOneSolution :: (Show a) => State (SList (Path a), Int) [[a]] -> IO ()
+getOneSolution = print . safeHead . fst . ((flip runState) (SList [],0))
 
-many :: (Show a) => Int -> State (SList (Path a), Int) [[a]] -> IO ()
-many count = print . (take count) . fst . ((flip runState) (SList [],0))
+getManySolutions :: (Show a) => Int -> State (SList (Path a), Int) [[a]] -> IO ()
+getManySolutions count = print . (take count) . fst . ((flip runState) (SList [],0))
+
+getAllSolutions :: (Show a) => State (SList (Path a), Int) [[a]] -> IO ()
+getAllSolutions = print . fst . ((flip runState) (SList [],0))
+
 --instance Functor (Backlog a) where
 
 --instance Applicative (Backlog a) where
