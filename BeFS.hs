@@ -2,7 +2,7 @@ module BeFS where
 
 import Path
 import Expandable
-import Backlog
+import Haggle
 import Control.Monad.State.Lazy
 import Debug.Trace
 

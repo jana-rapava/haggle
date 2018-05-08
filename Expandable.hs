@@ -28,7 +28,7 @@ lengthen path sons = [s:path | s <- sons]
 
 -- wrapper for simplification
 expand :: (Expandable a, Show a) => a -> Result a
-expand active = if (stopSuccess (trace ("active " ++ show active) active)) then Success active
+expand active = if (stopSuccess active) then Success active
                 else let sons = generateNbs active in
                         if (stopFail sons) then Fail
                         else (Sons sons)

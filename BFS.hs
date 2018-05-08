@@ -3,7 +3,7 @@ module BFS where
 import InfInt
 import Expandable
 import Path
-import Backlog
+import Haggle
 import Control.Monad.State.Lazy
 import Debug.Trace
 

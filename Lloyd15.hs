@@ -10,7 +10,6 @@ import Control.Monad.State.Lazy
 import Control.Monad.Trans.Maybe
 import Debug.Trace
 
-
 data Matrix a = M {
                 blank :: a,
                 height :: Int,

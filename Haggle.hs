@@ -1,8 +1,12 @@
-module Backlog where
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
+module Haggle where
 
 import Control.Monad.State
 import Path
 import Data.List (find)
+
+newtype SList a = SList { getSList :: [a] } deriving (Functor, Show, Eq)
 
 newtype Backlog a = B { getBacklog :: (SList (Path a), Int)}
 
