@@ -1,6 +1,3 @@
--- langauge core modules
-import Path
-import Expandable
 import Backlog
 -- used algorithms
 import BFS
@@ -10,7 +7,7 @@ import Lloyd15
 import Success4x4
 import TestFixtures
 
-main =  getManySolutions 2 $ do
+main =  getOneSolution $ do
           with board1y
-          bfs 2
+          bfs 5
           befs manhattan_sum
