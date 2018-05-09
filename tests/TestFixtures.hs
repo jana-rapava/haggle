@@ -10,11 +10,6 @@ import Path
 rankBasic :: Matrix a -> Int
 rankBasic _ = 0
 
--- this function prunes the branches of search space
---pruneBasic :: (Eq a) => [Matrix a] -> [Matrix a] -> [Matrix a]
--- delete all items in l1 which appear in l2
---pruneBasic = (\\)
-
 -- heuristics 1: rank the board with lowest number of misplaced tiles
 misplaced' :: (Eq a) => Matrix a -> Matrix a -> Int
 misplaced' b1 b2 = fromIntegral $ length $ filter (== False) $ zipWith (==) (content b1) (content b2)
@@ -30,9 +25,9 @@ manhattan height width b (n,x) = abs (row n - row m) + abs (column n - column m)
 manhattan_sum' :: (Eq a) => Int -> Int -> Matrix a -> Matrix a -> Int
 manhattan_sum' height width b1 b2 = fromIntegral $ sum $ map (manhattan height width b1) (content b2)
 
---------------
+-------------------------
 -- TESTCASE #0 - fixtures
---------------
+-------------------------
 boardHeight0 = 2
 boardWidth0 = 2
 blank0 = '.'
@@ -113,11 +108,10 @@ board0n = M { blank = blank0,height = boardHeight0,
 path0 = [board0, board0m, board0l, board0k, board0j, board0i, board0h, board0g, board0f, board0e, board0d, board0c]
 paths0 = [path0, [board0, board0c]]
 paths0rev = [[board0, board0c], path0]
---paths0rev = [[board0, board0m, board0l, board0k, board0j, board0i, board0h, board0g, board0f, board0e, board0d, board0c], [board0, board0c]]
 
---------------
+-------------------------
 -- TESTCASE #1 - fixtures
---------------
+-------------------------
 boardHeight1 = 4
 boardWidth1 = 4
 blank1 = '.'
@@ -348,12 +342,9 @@ paths2 :: [([Matrix Char], Integer)]
 paths2 = [([board1f, board1],2), ([board1x, board1],2)]
 paths3 :: SList ([Matrix Char], Integer)
 paths3 = SList [([board1t, board1],3), ([board1s, board1f, board1], 5), ([board1v,board1f,board1], 6), ([board1u, board1], 8) ]
---paths3 = SList [([board1s, board1f, board1], 5)]
 paths4 :: [([Matrix Char], Integer)]
---paths4 = [([board1u, board1], 8), ([board1t, board1],3)]
 paths4 = [([board1f, board1],5), ([board1x, board1],7)]
 paths5 :: SList ([Matrix Char], Integer)
---paths5 = SList [([board1t, board1],3), ([board1s, board1f, board1], 5), ([board1u, board1], 8)]
 paths5 = SList [([board1t, board1],3),([board1f, board1],5),([board1s, board1f, board1], 5),([board1v,board1f,board1], 6),([board1x, board1],7),([board1u, board1], 8)]
 xbacklog1 = [[board1k], [board1l], [board1m],[]]
 rightmost1 = [board1, board1x, board1y]
