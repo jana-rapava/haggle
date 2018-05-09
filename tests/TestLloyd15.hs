@@ -3,11 +3,6 @@ module TestLloyd15 where
 import Test.HUnit
 import Lloyd15
 import TestFixtures
-import Data.Maybe (catMaybes, fromJust)
-import Data.List (sortBy, elemIndex, (\\))
-import Data.Function (on)
-import Control.Monad.Reader
-import Control.Monad.State.Lazy
 
 --------------
 -- TESTCASE #0 - tests

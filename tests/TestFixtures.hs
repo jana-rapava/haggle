@@ -2,7 +2,7 @@ module TestFixtures where
 
 import Haggle
 import Lloyd15
-import Data.List ((\\), elemIndex)
+import Data.List (elemIndex)
 import Data.Maybe (fromJust)
 import Path
 

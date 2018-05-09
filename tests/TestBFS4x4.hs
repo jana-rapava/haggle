@@ -1,16 +1,11 @@
-{-# LANGUAGE FlexibleInstances #-}
-
 module TestBFS4x4 where
 
 import Test.HUnit
 import BFS
 import InfInt
---import FunctionStore
 import TestFixtures
 import Lloyd15
 import Success4x4
-import Expandable
-
 
 ---------------
 -- TESTCASE #1

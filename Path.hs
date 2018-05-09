@@ -1,5 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-
 module Path where
 
 newtype Path a = P { getPath :: ([a], Int) } deriving (Show, Eq)

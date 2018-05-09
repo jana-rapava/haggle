@@ -1,13 +1,9 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-
 module Lloyd15 where
 
 import Control.Exception (assert)
 import Data.Maybe (catMaybes, fromJust)
 import Data.List (elemIndex)
-import Control.Monad.Reader
 import Control.Monad.State.Lazy
-import Control.Monad.Trans.Maybe
 import Debug.Trace
 
 data Matrix a = M {
