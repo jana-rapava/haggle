@@ -66,10 +66,15 @@ All examples may be built and run by shell script runExamples.sh.
 Unit tests are in the directory tests. They use HUnit framework.
 
 Module TestFixtures contains some helper functions for heuristics and data for testing.
+
 Module TestLloyd15 tests representation of Lloyd15 problem.
+
 Module TestBeFS2x2 searches for solutions to 2x2 version of Lloyd15 using best-first search.
+
 Module TestBeFS4x4 searches for solutions to 4x4 version of Lloyd15 using best-first search.
+
 Module TestBFS2x2 searches for solutions to 2x2 version of Lloyd15 using breadth-first search.
+
 Module TestBFS4x4 searches for solutions to 4x4 version of Lloyd15 using breadth-first search.
 
 All tests may be run by shell script runTests.sh.
