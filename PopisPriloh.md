@@ -52,7 +52,7 @@ Príklady hľadania riešenia 4x4 verzie Lloyd 15 s použitím prehľadávania s
 
 ### BFS2x2
 
-Príklady hľadania riešenia to 2x2 verzie Lloyd 15 s použitím prehľadávania do šírky.
+Príklady hľadania riešenia 2x2 verzie Lloyd 15 s použitím prehľadávania do šírky.
 
 ### BFS4x4
 
@@ -100,7 +100,7 @@ Modul TestBeFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadáv
 
 ### TestBFS2x2.hs
 
-Modul TestBFS2x2 hľadá riešenia to 2x2 verzie Lloyd 15 s použitím prehľadávania do šírky.
+Modul TestBFS2x2 hľadá riešenia 2x2 verzie Lloyd 15 s použitím prehľadávania do šírky.
 
 ### TestBFS4x4.hs
 
