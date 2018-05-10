@@ -1,5 +1,7 @@
 # Haggle
 
+(Tento súbor je v Markdown formáte. Pre renderovanie do HTML použite napríklad program marked.)
+
 Haggle je vnorený doménovo špecifický jazyk pre všeobecné problémy prehľadávania stavových priestorov. Jeho cieľom je zjednodušiť kombinovanie rozličných prehľadávacích algoritmov a skúšanie rozličných heuristík pre daný problém.
 
 ## Kompilácia a spúšťanie
@@ -87,10 +89,6 @@ Skript runExamples.sh skompiluje a spustí všetky príklady.
 
 V adresári tests sa nachádzajú unit testy. Všetky používajú framework HUnit.
 
-Modul TestFixtures obsahuje pomocné funkcie pre heuristiky a testovacie dáta.
-
-Modul TestLloyd15 testuje reprezentáciu Lloyd 15.
-
 Modul TestBeFS2x2 hľadá riešenia 2x2 verzie Lloyd 15 s použitím prehľadávania s výberom najlepšieho.
 
 Modul TestBeFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadávania s výberom najlepšieho.
@@ -98,5 +96,9 @@ Modul TestBeFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadáv
 Modul TestBFS2x2 hľadá riešenia to 2x2 verzie o Lloyd 15 s použitím prehľadávania do šírky.
 
 Modul TestBFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadávania do širky.
+
+Modul TestFixtures obsahuje pomocné funkcie pre heuristiky a testovacie dáta.
+
+Modul TestLloyd15 testuje reprezentáciu Lloyd 15.
 
 Skript runTests.sh skompiluje a spustí všetky testy.
