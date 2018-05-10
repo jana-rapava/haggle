@@ -1,36 +1,36 @@
 # Haggle
 
-Haggle is a search language for general state-space search problems. It aims to make combining different search algorithms and trying different heuristics simple.
+Haggle je vnorený doménovo špecifický jazyk pre všeobecné problémy prehľadávania stavových priestorov. Jeho cieľom je yjednodušiť kombinovanie rozličných prehľadávacích algoritmov a skúšanie rozličných heuristík pre daný problém.
 
-## Compilation and loading
+## Kompilácia a spúšťanie
 
-Source code of Haggle consists of core modules - Haggle, Path and Expandable - and search algorithm modules. Supported search algorithms are:
+Zdrojový kód jazyka Haggle pozostáva z troch modulov, ktoré tvoria jeho jadro - Haggle, Path a Expandable - a z modulov, ktoré implementujú konkrétne prehľadávacie algoritmy. Podporované prehľadávacie algoritmy sú:
 
-* best-first search (with heuristics)
+* prehľadávanie s výberom najlepšieho (s heuristikou)
 
-* breadth-first search (with any, even infinite, depth)
+* prehľadávanie do šírky (s ľubovoľnou hĺbkou vrátane nekonečnej)
 
-In order to use Haggle, it's necessary to have GHC 7 installed. Later versions will probably not work.
+Haggle potrebuje GHC 7. Novšie verzie pravdepodone nebudú fungovať.
 
-The easiest way to use Haggle is to keep the source code files where you downloaded them, and give the particular directory as -i option to the compiler when you are compiling/running your Haggle files.
+Najjednoduchší spôsob, ako používať Haggle, je stiahnuť si jeho zdrojové súbory a dať adresár so ydrojovými súbormi ako -i parameter prekladaču, keď kompilujete alebo spúšťate Haggle súbory.
 
-## Adding new search algorithms
+## Pridávanie nových prehľadávacích algoritmov
 
-Implement your search algorithm in Haskell in a new Haskell module. Top-level function which does the actual search needs to have a return type State (Backlog a) [[a]] for a member of the Expandable typeclass.
+Implemntujte váš prehľadávací algoritmus v Haskelli ako nový modul. Exportovaná funkcia, ktorá vykonáva samotné prehľadávanie, musí mať návratový typ State (Backlog a) [[a]], ak je a inštanciou typovej triedy Expandable.
 
-Then just import this module from your Haggle file and use the function.
+Potom stačí len importovať modul z Haggle súborov a zavolať prehľadávaciu funkciu.
 
-## Trying out new problems
+## Testovanie algoritmov na nových problémoch
 
-In order for the problem to be solved by Haggle, you have to make the problem representation a member of typeclass Expandable.
+Navrhnite dátový typ reprezentujúci problém a urobte tento typ inštanciou typovej triedy Expandable.
 
-Now you can use available search algorithms to find solutions for your problem.
+Teraz môžete používať podporované prehľadávanie algoritmy a ich kombinácie na hľadanie riešenia tohto problému.
 
-## Haggle file format
+## Formát súboru pre Haggle
 
-Haggle files are normal Haskell files. You are free to integrate Haskell snippets into your code wherever compiler allows it.
+Súbory pre Haggle sú obyčajné zdrojáky v Haskelli. Môžete v nich používať funkcie tohto jazyka, prípadne si pridať vlastné, kdekoľvek to prekladač dovoľuje.
 
-Scripts in Haggle look like the following:
+Súbor pre jazyk Haggle vyzerá nasledovne:
 
 ```
 import Haggle
@@ -43,33 +43,33 @@ main = < result selector > $ do
                                 <search algorithms n> <params>
 ```
 
-To use best-first search, use:
+Algoritmus pre prehľadávanie s výberom najlepšieho sa zavolá použitím:
 
-`befs < heuristic function >`
+`befs < heuristická funkcia >`
 
-To use breadth/first search, use:
+Algoritmus pre prehľadávanie do šírky sa zavolá použitím:
 
-`bfs < limit; Inf for infinity >`
+`bfs < limit; Inf znamená neobmedzene >`
 
-To run your Haggle files, use:
+Haggle súbor spustíte (napríklad) pomocou:
 
-`runghc -i<path to Haggle source> hagglefile.hs`
+`runghc -i<path to Haggle> hagglefile.hs`
 
-## Examples
+## Príklady
 
-A collection of example files is in directory examples. These examples are all concerned with finding solutions for Lloyd 15 problem in various ways.
+V adresári examples je niekoľko príkladov využitia jazyka Haggle pre hľadanie riešení Lloydovej 15 royličnými technikami.
 
-All examples may be built and run by shell script runExamples.sh.
+Skript runExamples.sh skompiluje a spustí všetky príklady.
 
-## Tests
+## Testy
 
-Unit tests are in the directory tests. They use HUnit framework.
+V adresári tests sa nachádzajú unit testy. Všetky používajú framework HUnit.
 
-Module TestFixtures contains some helper functions for heuristics and data for testing.
-Module TestLloyd15 tests representation of Lloyd15 problem.
-Module TestBeFS2x2 searches for solutions to 2x2 version of Lloyd15 using best-first search.
-Module TestBeFS4x4 searches for solutions to 4x4 version of Lloyd15 using best-first search.
-Module TestBFS2x2 searches for solutions to 2x2 version of Lloyd15 using breadth-first search.
-Module TestBFS4x4 searches for solutions to 4x4 version of Lloyd15 using breadth-first search.
+Modul TestFixtures contains some helper functions for heuristics and data for testing.
+Modul TestLloyd15 testuje reprezentaciu Lloyd 15.
+Modul TestBeFS2x2 hľadá riešenia 2x2 verzie Lloyd 15 s použitím prehľadávania s výberom najlepšieho.
+Modul TestBeFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadávania s výberom najlepšieho.
+Modul TestBFS2x2 hľadá riešenia to 2x2 verzie o Lloyd 15 s použitím prehľadávania do šírky.
+Modul TestBFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadávania do širky.
 
-All tests may be run by shell script runTests.sh.
+Skript runTests.sh skompiluje a spustí všetky testy.
