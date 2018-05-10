@@ -2,17 +2,15 @@
 
 dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
-echo $dir
-
 runghc -i"$dir" -i"$dir"/tests ./examples/BeFS2x2/testSearchFirstBeFS0c.hs
 runghc -i"$dir" -i"$dir"/tests ./examples/BeFS2x2/testSearchBeFS0c.hs
 runghc -i"$dir" -i"$dir"/tests ./examples/BeFS2x2/testSearchBeFS0n.hs
 
 runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchFirstBeFS1xmanhattan_sum.hs
-runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchFirstBeFS1yBasic.hs 2> testlog
+runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchFirstBeFS1yBasic.hs
 runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchFirstBeFS1ymanhattan_sum.hs
 runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchFirstBeFS1ymisplaced.hs
-runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchFirstBeFSxBasic.hs 2> testlog
+runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchFirstBeFSxBasic.hs
 runghc -i"$dir" -i"$dir"/tests ./examples/BeFS4x4/testSearchTwoBeFS1xmisplaced.hs
 
 runghc -i"$dir" -i"$dir"/tests ./examples/BFS2x2/testSearchBFS0_11.hs

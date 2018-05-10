@@ -4,7 +4,7 @@ import Control.Exception (assert)
 import Data.Maybe (catMaybes, fromJust)
 import Data.List (elemIndex)
 --import Control.Monad.State.Lazy
-import Debug.Trace
+--import Debug.Trace
 
 -- data type for (sparse) matrix
 data Matrix a = M {

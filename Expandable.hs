@@ -1,7 +1,7 @@
 module Expandable where
 
 import Data.List ((\\))
-import Debug.Trace
+--import Debug.Trace
 
 data Result a = Fail | Success a | Sons [a] deriving (Show)
 

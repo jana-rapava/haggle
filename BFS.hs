@@ -5,7 +5,7 @@ import Expandable
 import Path
 import Haggle
 import Control.Monad.State.Lazy
-import Debug.Trace
+--import Debug.Trace
 
 -- takes list of paths and list of results
 -- paths are extended by respective results when possible

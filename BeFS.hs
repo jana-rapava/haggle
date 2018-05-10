@@ -4,7 +4,7 @@ import Path
 import Expandable
 import Haggle
 import Control.Monad.State.Lazy
-import Debug.Trace
+--import Debug.Trace
 
 befs :: (Expandable a, Show a) =>
         (a -> Int) ->
@@ -13,9 +13,10 @@ befs f = do
            backlog0 <- get
            case (getSList $ fst $ getBacklog $ backlog0) of
                 [] -> return []
-                ((P (path0,rank0)):backlog1) -> let active = head (trace ("path0 " ++ show path0) path0)
+                ((P (path0,rank0)):backlog1) -> let active = head path0 --(trace ("path0 " ++ show path0) path0)
                                                     result = prune (expand active) path0 in do
-                                                        case (trace ("result " ++ show result) result) of
+                                                        case result of
+                                                        --case (trace ("result " ++ show result) result) of
                                                             Fail -> do
                                                                     put (B (SList backlog1, 0))
                                                                     paths1 <- befs f
