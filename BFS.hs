@@ -7,6 +7,9 @@ import Haggle
 import Control.Monad.State.Lazy
 import Debug.Trace
 
+-- takes list of paths and list of results
+-- paths are extended by respective results when possible
+-- returns a tuple (successful paths, extensible paths)
 maybeLengthen :: [[a]] -> [Result a] -> ([[a]], [[a]])
 maybeLengthen [] [] = ([], [])
 maybeLengthen (path:paths) (r:rs) = let (suc', backlog') = maybeLengthen paths rs in
@@ -18,6 +21,7 @@ maybeLengthen (path:paths) (r:rs) = let (suc', backlog') = maybeLengthen paths r
 rankLength :: [a] -> Path a
 rankLength xs = P (xs, length xs)
 
+-- liftM2 where f is applied to values sharing an index
 liftM2zip :: (a -> b -> c) -> [a] -> [b] -> [c]
 liftM2zip f xs ys = map (uncurry f) (zip xs ys)
 
@@ -34,7 +38,6 @@ extend ps = let
 bfs :: (Expandable a, Show a) =>
        InfInt ->
        State (Backlog a) [[a]]
---       State (SList (Path a), Int) [[a]]
 bfs limit = do
               s <- get
               let backlog0 = getSList $ fst $ getBacklog $ s

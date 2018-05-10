@@ -351,4 +351,3 @@ rightmost1 = [board1, board1x, board1y]
 
 misplaced = misplaced' board1
 manhattan_sum = manhattan_sum' boardHeight1 boardWidth1 board1
-

@@ -15,7 +15,6 @@ testSearchFirstBeFS0c = TestCase $ assertEqual ""
         path0
         (head $ testBefs board0c rankBasic)
 
-
 testSearchBeFS0c :: Test
 testSearchBeFS0c = TestCase $ assertEqual ""
         paths0

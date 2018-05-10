@@ -9,7 +9,6 @@ import Debug.Trace
 befs :: (Expandable a, Show a) =>
         (a -> Int) ->
         State (Backlog a) [[a]]
---        State (SList (Path a), Int) [[a]]
 befs f = do
            backlog0 <- get
            case (getSList $ fst $ getBacklog $ backlog0) of
@@ -33,4 +32,5 @@ befs f = do
 
 testBefs :: (Eq a, Show a, Expandable a) => a -> (a -> Int) -> [[a]]
 testBefs b f = fst $ runState (befs f) (B (SList [b_path], 0))
-        where b_path = P $([b], rank f [b])
+--        where b_path = P $([b], rank f [b])
+        where b_path = P $ ([b], 0)
