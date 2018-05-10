@@ -93,7 +93,7 @@ Modul TestBeFS2x2 hľadá riešenia 2x2 verzie Lloyd 15 s použitím prehľadáv
 
 Modul TestBeFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadávania s výberom najlepšieho.
 
-Modul TestBFS2x2 hľadá riešenia to 2x2 verzie o Lloyd 15 s použitím prehľadávania do šírky.
+Modul TestBFS2x2 hľadá riešenia 2x2 verzie Lloyd 15 s použitím prehľadávania do šírky.
 
 Modul TestBFS4x4 hľadá riešenia 4x4 verzie Lloyd 15 s použitím prehľadávania do širky.
 
